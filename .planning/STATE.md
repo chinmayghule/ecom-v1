@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-11-16T13:34:59.803Z"
-last_activity: 2026-11-16 — Roadmap created (8 phases, 61/61 requirements mapped)
+status: executing
+stopped_at: Phase 1 planned — 9 plans ready
+last_updated: "2026-11-16T17:29:17.017Z"
+last_activity: 2026-11-16 -- Phase 1 planning complete
 progress:
   total_phases: 8
   completed_phases: 0
-  total_plans: 0
+  total_plans: 9
   completed_plans: 0
   percent: 0
 ---
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 of 8 (Platform Foundation & Identity)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-11-16 — Roadmap created (8 phases, 61/61 requirements mapped)
+Plan: 0 of 9 in current phase
+Status: Ready to execute
+Last activity: 2026-11-16 -- Phase 1 planning complete
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -67,9 +67,10 @@ None yet.
 
 - **Backend host + card-on-file (owner escalation, surface now — do not defer to Phase 8):** Cloud Run free tier (research recommendation) requires a card on file — conflicts with zero-spend. Fallbacks documented: Railway trial + Docker Compose reference. Keep DEPLOYMENT.md provider-agnostic until decided.
 - **Owner product decisions to record during planning:** email notifications (recommend log-sink notifier or explicit deferral), refund semantics for cancel-after-payment (recommend CANCELLED + mock refund on attempt ledger — reflected in Phase 3 criteria), reviews/ratings deferral (already recorded in REQUIREMENTS.md Out of Scope).
-- **Version pins (from research):** Prisma exactly 7.10.1, TypeScript 6.x, @hey-api/openapi-ts exactly 0.99.0; decide client generator at Phase 1 planning (STACK default: hey-api).
-- **Clerk×NestJS:** no official SDK (MEDIUM confidence) — re-verify during Phase 1 planning; thin custom guard is the default.
-- **Research flags:** Phase 1 (Clerk guard + Prisma pins) and Phase 3 (commerce-correctness pitfalls) likely need `--research-phase`.
+- **Version pins (from research):** Prisma exactly 7.10.1 and TypeScript 6.x selected; future client generator is `@hey-api/openapi-ts` exactly 0.99.0 (installed/generated in Phase 4, not Phase 1).
+- **Clerk×NestJS:** no official NestJS SDK; Phase 1 selects a thin custom guard around the official `@clerk/backend` verifier, with signed claims, authorized parties, and bearer transport.
+- **Research flags:** Phase 1 research is complete in `01-RESEARCH.md`; Phase 3 still needs focused commerce-correctness research.
+- Phase 1 execution gates: Plan 01-01 requires owner approval for SUS Vitest before install; Plan 01-03 requires owner decisions on merchant-obligation deletion, tombstone/privacy retention, and Clerk session revocation.
 
 ## Deferred Items
 
@@ -80,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T13:34:59.702Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-platform-foundation-identity/01-CONTEXT.md
+Last session: 2026-11-16T17:29:12.653Z
+Stopped at: Phase 1 planned — 9 plans ready
+Resume file: .planning/phases/01-platform-foundation-identity/01-01-PLAN.md
