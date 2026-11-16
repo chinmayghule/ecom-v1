@@ -49,7 +49,7 @@ A customer can discover a merchant's product, buy it through a safe, backend-enf
 ## Context
 
 - Greenfield: repository is deliberately unscaffolded (docs only). No apps, packages, manifests or CI exist yet.
-- `master-document.md` is the authoritative project brief (approved product requirements, stages, technology direction, constraints). This PROJECT.md summarizes; the master document wins on conflict.
+- `master-document.md` and this file capture project context at different levels of detail. Both can become stale; if they disagree or conflict with verified behaviour, consult the owner and update the affected records rather than assuming one automatically wins.
 - `ecom-v0` (github.com/chinmayghule/ecom-v0) is historical context only — do not copy its stack (pnpm/Biome/Lefthook/NestJS 11/TypeORM).
 - Stage terminology: **Stage** = long-term deliverable in the master document (this project's Stage 1 = "Complete Monolith"); **GSD phase** = implementation-sized unit in `.planning/`. Never conflate the numbering.
 - Implementation sequencing is mandated: **backend → frontend → integration → deployment** (revised 2026-11-16 by owner decision). Backend planning must still model customer and merchant journeys so API contracts serve their real consumers.

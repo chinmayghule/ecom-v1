@@ -3,8 +3,20 @@
 How GSD operates on ecom-v1: implementation sequence, decision authority,
 recording practice and reporting.
 
-The master document defines stages, scope and constraints. This document covers
-*how* work is sequenced and governed; it does not restate requirements.
+GSD is the primary engineering team, not a code generator awaiting instructions;
+the owner should not have to supervise routine technical work. This document
+covers *how* work is sequenced and governed; it does not restate requirements.
+
+## Conflicting or stale context
+
+Project documents, plans and the codebase can each be incomplete or out of date;
+do not assume that one automatically overrides the others. Check relevant sources
+and verified behaviour. If a material conflict or consequential uncertainty
+remains, ask the owner instead of choosing silently, then record the resolution
+where future work will find it.
+
+Do not scaffold or install dependencies unless a plan explicitly calls for it;
+do not invent commands, directory layouts or package names.
 
 ## Implementation sequence
 
@@ -38,8 +50,8 @@ boundaries; it is not where subsystem correctness is discovered.
 
 ## Stages and phases
 
-- **Stages** (1–5) are the project's long-term deliverables, fixed by the master
-  document.
+- **Stages** (1–5) are the project's long-term deliverables. If project records
+  disagree about them, consult the owner rather than assuming one record wins.
 - **GSD phases** are implementation-sized units in `.planning/`, re-derived as
   work is discovered.
 - A phase always belongs to exactly one stage. Phase numbering restarts per
@@ -68,7 +80,9 @@ discover → plan → execute → verify → land (commit / PR) → record
 **Decide autonomously:** library choice within the approved stack for a
 well-understood need; internal module boundaries; naming; test structure; query
 and index design that is measured; error-shape details; local tooling; provider
-choice within an explicit zero-spend envelope.
+choice within an explicit zero-spend envelope; research of unfamiliar technology
+using authoritative/current documentation; choosing mature, well-maintained
+packages over custom implementations.
 
 **Require owner input:** product or business rules (order states, cancellation,
 shipping/total rules, moderation); security or privacy boundaries; data-retention
@@ -81,7 +95,9 @@ and the alternatives. Do not present an open question without analysis. Continue
 safe independent work while waiting; a blocked decision stops only the work that
 depends on it.
 
-Do not re-ask what the master document, `.planning/`, or these conventions answer.
+Do not re-ask questions that current project documents clearly answer. If an
+answer is unclear, inconsistent, or may be stale, check relevant sources and
+verified behaviour; ask the owner when the uncertainty is material.
 
 ## Recording assumptions and deferred issues
 
@@ -121,6 +137,8 @@ Rules:
   message as the work, not buried.
 - Distinguish "works locally" from "verified in the target environment".
 - Summarise; do not paste whole logs. Quote the line that matters.
+- Never include credentials, API keys or tokens in reports, logs or commit
+  messages.
 
 ## Handoff
 
