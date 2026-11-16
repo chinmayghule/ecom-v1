@@ -35,7 +35,18 @@ This roadmap delivers Stage 1 of the marketplace-lite e-commerce application: a 
   3. A user remains signed in across browser sessions and can sign out; a verified email matching the admin env-configured list is granted the platform-admin role on first sign-in.
   4. A user can delete their account; personal profile data is anonymized while order records are retained with an anonymized buyer reference.
   5. Every API endpoint rejects unauthenticated/invalid requests and denies access to other users' resources — enforced server-side and proven by cross-user and role-matrix tests.
-**Plans**: TBD (est. 4–5 plans: scaffold/toolchain/Prisma-pinned/Docker/CI; Clerk guard + provisioning; roles + admin bootstrap; account deletion/anonymization; guard stack + cross-tenant/role test harness)
+**Plans**: 9 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Verify the SUS Vitest dependency before any install
+- [ ] 01-02-PLAN.md — Create the pinned pnpm/Vite+ workspace, NestJS API, and test harness
+- [ ] 01-03-PLAN.md — Resolve account-deletion, merchant-closure, tombstone, and Clerk-revocation policy
+- [ ] 01-04-PLAN.md — Establish the Prisma schema, migration, and database runtime foundation
+- [ ] 01-05-PLAN.md — Add global validation, Pino logging, health probes, and Docker Compose
+- [ ] 01-06-PLAN.md — Verify Clerk sessions and provision race-safe local users with capabilities
+- [ ] 01-07-PLAN.md — Enforce capabilities/ownership and define the Clerk profile/session contract
+- [ ] 01-08-PLAN.md — Implement owner-approved account deletion, merchant closure, and provider revocation
+- [ ] 01-09-PLAN.md — Add CI, phase acceptance tests, journey contracts, and clean-snapshot verification
 
 Notes:
 - Toolchain decision: pnpm workspaces + Node pinned via `.nvmrc` + `engines` + Corepack `packageManager`; Docker images pin the same Node version (see PROJECT.md Key Decisions). Verify exact Node version against NestJS 12's ≥22.12 requirement at planning; pin exact package versions per STACK.md (Prisma 7.10.1, TS 6.x, @hey-api/openapi-ts 0.99.0).
@@ -163,7 +174,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (∥ 6) → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Identity | 0/TBD | Not started | - |
+| 1. Platform Foundation & Identity | 0/9 | Planned    |  |
 | 2. Gallery, Stores & Catalogue | 0/TBD | Not started | - |
 | 3. Cart, Checkout, Payments & Orders | 0/TBD | Not started | - |
 | 4. Admin Backend & Contract Freeze | 0/TBD | Not started | - |
