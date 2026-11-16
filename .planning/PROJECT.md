@@ -84,6 +84,7 @@ A customer can discover a merchant's product, buy it through a safe, backend-enf
 | Mock-payment unknown outcome: idempotency key + inquiry endpoint over attempt ledger; same-key retry reuses original attempt | Distinguishes unknown from failed; repeatable scenarios | — Pending |
 | Account deletion anonymizes personal data; orders retained with anonymized buyer reference | Merchant/admin order history stays consistent | — Pending |
 | Image gallery module (added 2026-11-16, refines master doc "validated external image URLs"): admin-only CRUD of curated free stock image URLs (~200 seeded, name/category/tags metadata); merchants pick (multiple) product images from the gallery — no uploads, no arbitrary URLs; admin delete = soft-deactivate with graceful product placeholder | Centralizes validation, prevents arbitrary merchant URLs, handles image-deletion edge case | — Pending |
+| Node/pnpm isolation: pnpm workspaces as package manager; Node version pinned via `.nvmrc` + `engines` + Corepack `packageManager` field; Docker images pin the same Node version; no bun as runtime | Mature monorepo default for Next.js + NestJS; version isolation across local/CI/Docker; bun adds ecosystem friction for no needed benefit | — Pending |
 
 ## Evolution
 

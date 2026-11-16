@@ -134,13 +134,75 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 1 | Pending |
+| CATL-01 | Phase 5 | Pending |
+| CATL-02 | Phase 5 | Pending |
+| CATL-03 | Phase 5 | Pending |
+| CATL-04 | Phase 5 | Pending |
+| CATL-05 | Phase 5 | Pending |
+| CATL-06 | Phase 5 | Pending |
+| CATL-07 | Phase 5 | Pending |
+| CATL-08 | Phase 3 | Pending |
+| CART-01 | Phase 3 | Pending |
+| CART-02 | Phase 3 | Pending |
+| CART-03 | Phase 3 | Pending |
+| CART-04 | Phase 3 | Pending |
+| CHCK-01 | Phase 3 | Pending |
+| CHCK-02 | Phase 3 | Pending |
+| CHCK-03 | Phase 3 | Pending |
+| CHCK-04 | Phase 3 | Pending |
+| CHCK-05 | Phase 3 | Pending |
+| CHCK-06 | Phase 3 | Pending |
+| CHCK-07 | Phase 3 | Pending |
+| ORDR-01 | Phase 5 | Pending |
+| ORDR-02 | Phase 5 | Pending |
+| ORDR-03 | Phase 5 | Pending |
+| ORDR-04 | Phase 5 | Pending |
+| ORDR-05 | Phase 3 | Pending |
+| GALL-01 | Phase 2 | Pending |
+| GALL-02 | Phase 2 | Pending |
+| GALL-03 | Phase 2 | Pending |
+| GALL-04 | Phase 2 | Pending |
+| GALL-05 | Phase 2 | Pending |
+| GALL-06 | Phase 6 | Pending |
+| GALL-07 | Phase 6 | Pending |
+| GALL-08 | Phase 5 | Pending |
+| MERC-01 | Phase 2 | Pending |
+| MERC-02 | Phase 2 | Pending |
+| MERC-03 | Phase 2 | Pending |
+| MERC-04 | Phase 2 | Pending |
+| MERC-05 | Phase 2 | Pending |
+| MERC-06 | Phase 6 | Pending |
+| MERC-07 | Phase 6 | Pending |
+| MERC-08 | Phase 2 | Pending |
+| ADMN-01 | Phase 4 | Pending |
+| ADMN-02 | Phase 4 | Pending |
+| ADMN-03 | Phase 2 | Pending |
+| ADMN-04 | Phase 2 | Pending |
+| ADMN-05 | Phase 4 | Pending |
+| ADMN-06 | Phase 4 | Pending |
+| OPS-01 | Phase 1 | Pending |
+| OPS-02 | Phase 4 | Pending |
+| OPS-03 | Phase 1 | Pending |
+| OPS-04 | Phase 7 | Pending |
+| OPS-05 | Phase 1 | Pending |
+| OPS-06 | Phase 8 | Pending |
+| OPS-07 | Phase 8 | Pending |
+| OPS-08 | Phase 8 | Pending |
+| OPS-09 | Phase 5 | Pending |
+
+**Mapping convention:** each requirement maps to the phase delivering the majority of its substance (backend-enforced rules → backend phase; presentation-facing requirements → frontend phase). Backend APIs consumed by later UI phases are noted in the corresponding phase details in ROADMAP.md.
 
 **Coverage:**
 - v1 requirements: 61 total
-- Mapped to phases: 0
-- Unmapped: 61 ⚠️ (populated during roadmap creation)
+- Mapped to phases: 61 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-11-16*
-*Last updated: 2026-11-16 after initial definition (Stage 1 scope; gaps resolved with owner)*
+*Last updated: 2026-11-16 — traceability populated after roadmap creation (8 phases; Stage 1 scope; gaps resolved with owner)*
