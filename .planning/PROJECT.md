@@ -22,7 +22,8 @@ A customer can discover a merchant's product, buy it through a safe, backend-enf
 - [ ] Checkout with backend-derived totals (items + ₹40 flat shipping, free ≥ ₹500) and deterministic mock payment
 - [ ] Customer order confirmation, history and details
 - [ ] Self-service merchant onboarding, store profile and basic store management
-- [ ] Merchant product CRUD: create, edit, publish, archive; images via validated external URLs
+- [ ] Merchant product CRUD: create, edit, publish, archive; images chosen from the admin-curated gallery
+- [ ] Admin-curated image gallery: admin-only CRUD of validated free stock image URLs with category/tags metadata; merchants select (multiple) images; ~200 seeded; soft-deactivate with graceful fallback
 - [ ] Merchant basic inventory management for own products
 - [ ] Seller-facing order management with backend-enforced permissions and allowed actions
 - [ ] Minimum platform-admin capability: oversight of users, merchants, category configuration and order operations
@@ -82,6 +83,7 @@ A customer can discover a merchant's product, buy it through a safe, backend-enf
 | Shipping: flat ₹40 per order, free at ≥ ₹500; currency INR, money stored as integer paise | Owner-specified; backend derives totals | — Pending |
 | Mock-payment unknown outcome: idempotency key + inquiry endpoint over attempt ledger; same-key retry reuses original attempt | Distinguishes unknown from failed; repeatable scenarios | — Pending |
 | Account deletion anonymizes personal data; orders retained with anonymized buyer reference | Merchant/admin order history stays consistent | — Pending |
+| Image gallery module (added 2026-11-16, refines master doc "validated external image URLs"): admin-only CRUD of curated free stock image URLs (~200 seeded, name/category/tags metadata); merchants pick (multiple) product images from the gallery — no uploads, no arbitrary URLs; admin delete = soft-deactivate with graceful product placeholder | Centralizes validation, prevents arbitrary merchant URLs, handles image-deletion edge case | — Pending |
 
 ## Evolution
 
