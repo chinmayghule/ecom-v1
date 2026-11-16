@@ -13,7 +13,7 @@ Resolve questions in this order:
 1. `master-document.md` — approved product requirements, scope, technology direction, constraints, stages. Authoritative.
 2. `.planning/` — GSD plans, roadmap, state and verification evidence.
 3. The codebase and verified behaviour.
-4. Supporting engineering docs (see "Planned documents").
+4. Supporting engineering conventions (see "Detailed conventions").
 
 Rules:
 
@@ -23,7 +23,7 @@ Rules:
 
 ## Repository state
 
-Deliberately unscaffolded: only `master-document.md` and `LICENSE` exist. There are **no apps, packages, manifests, lockfiles, CI or scripts yet**.
+Deliberately unscaffolded: the repository holds only documentation, this file, `.gitignore` and the Graphify plugin. There are **no apps, packages, manifests, lockfiles, CI or scripts yet**.
 
 - Do not invent commands, directory layouts, package names or build steps. Verify before documenting.
 - Do not scaffold or install dependencies unless a plan explicitly calls for it.
@@ -62,6 +62,8 @@ Escalations state the issue, its consequences, the recommended choice and the al
 - Test each subsystem during its own implementation; end-to-end journey verification comes after both exist.
 - Planning both subsystems up front is allowed; executing the frontend early is not.
 
+Phase lifecycle and decision authority: `GSD_WORKFLOW.md`.
+
 ## Engineering quality
 
 Require type-safe, secure, maintainable code. Prefer the smallest correct workflow.
@@ -70,12 +72,15 @@ Avoid: premature abstraction, speculative scaling, unnecessary or duplicate depe
 
 Flag security problems, poor practices and significant code smells with their consequences and the better alternative. The `master-document.md` constraints are binding: backend authority for authz, ownership and purchase totals; zero-spend hosting; no real card data in the mock payment path.
 
+Code changes: `CODING_CONVENTIONS.md`. Tests: `TESTING_CONVENTIONS.md`.
+
 ## Git and worktrees
 
-- Use worktrees when tasks need isolated directories, especially concurrent writers. **Never let two implementation agents modify the same working tree.**
+- Worktrees isolate concurrent or parallel code-modifying tasks. **Never let two implementation agents modify the same working tree.**
 - No worktree for read-only research or ordinary sequential work.
 - Never force-push, delete remote branches, or perform destructive/consequential Git operations without owner approval.
-- Repository-facing Git conventions and workflow live in dedicated docs (see below); do not expand them here.
+- Branch from `main`; it is the only branch and is currently unprotected. No CI exists yet, so nothing enforces these rules but review.
+- Consult `GIT_CONVENTIONS.md` and `GIT_WORKFLOW.md` before any commit, branch, merge, or worktree operation.
 
 ## Context efficiency
 
@@ -94,15 +99,18 @@ Flag security problems, poor practices and significant code smells with their co
 
 `github.com/chinmayghule/ecom-v0` (`AGENTS.md`, `GIT_CONVENTIONS.md`, `GIT_WORKFLOW.md`, `ecom_project_master.md`) is **historical context only**. Learn from its decisions and mistakes, but do not copy its stack or tooling: v0 used pnpm workspaces, Biome, Lefthook, NestJS 11 and TypeORM. ecom-v1 mandates Vite+, NestJS 12, Next.js 16, and its own Git documentation. Apply v0 conventions only where the current master document does not override them.
 
-## Planned documents
+## Detailed conventions
 
-Not yet created; `master-document.md` governs until they exist:
+Read the relevant document before the task, not after:
 
-- `GIT_CONVENTIONS.md` — commit format, branch naming.
-- `GIT_WORKFLOW.md` — branch flow, merge strategy, review, CI.
-- Starlight documentation site — setup, architecture, API behaviour, decisions, operations.
+| Task | Document |
+|---|---|
+| Commit, branch, merge, worktree | `GIT_CONVENTIONS.md`, `GIT_WORKFLOW.md` |
+| Application code, API, schema, logging | `CODING_CONVENTIONS.md` |
+| Writing or fixing tests | `TESTING_CONVENTIONS.md` |
+| GSD planning, execution, reporting | `GSD_WORKFLOW.md` |
 
-Keep this file concise; put procedures in those documents and link them here.
+Keep this file concise. Procedures belong in those documents; add a reference here rather than expanding this file.
 
 ## graphify
 
