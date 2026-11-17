@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { parseWebOrigins } from './common/auth/auth.types';
 import { buildCorsOptions } from './common/auth/auth.module';
 import { ClerkAuthGuard } from './common/auth/clerk-auth.guard';
+import { CapabilityGuard } from './common/authorization/capability.guard';
 import { validateEnv } from './common/config/env.validation';
 import { ApiExceptionFilter, type ExceptionSink } from './common/errors/api-exception.filter';
 import { ApiValidationPipe } from './common/validation/validation.pipe';
@@ -33,7 +34,9 @@ async function bootstrap(): Promise<void> {
 
   // Deny-by-default: only routes explicitly marked @IsPublic() bypass this.
   // Every other route requires a verified Clerk token and a resolved local user.
-  app.useGlobalGuards(app.get(ClerkAuthGuard));
+  // The capability guard runs after authentication and reads only that local
+  // user plus server-side route metadata — never a client-supplied role field.
+  app.useGlobalGuards(app.get(ClerkAuthGuard), app.get(CapabilityGuard));
 
   // The single OpenAPI assembler owns the document; later plans extend it.
   setupOpenApi(app);
