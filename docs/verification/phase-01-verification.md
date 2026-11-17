@@ -53,10 +53,11 @@ Git log ordering verified: `test(01-09)` (`f76974a`) precedes `feat(01-09)`
   tables), ran the 6 real-PostgreSQL constraint tests, and tore the cluster down.
 - The full suite's real-DB specs each provisioned their own disposable cluster
   when `TEST_DATABASE_URL` was not supplied, so no developer database was reused.
-- `docker compose config --quiet` passed; `docker compose build api` and
-  `docker compose up -d --wait --wait-timeout 180` could **not** run because the
-  Docker daemon is unavailable. Compose health-gated startup and the container
-  readiness check remain unverified at runtime here.
+- `docker compose config --quiet` passed. At the time of the original report the
+  Docker daemon was unavailable; it became available later in the day and the
+  full Compose smoke was then executed successfully — see the
+  `Post-execution verification (2026-11-17, Docker available)` section below,
+  which supersedes this caveat.
 
 ## Manual-only checks (not Phase 1 passes)
 
@@ -73,12 +74,85 @@ automated Phase 1 pass.
 
 ## Unresolved items
 
-- No Docker daemon: Compose image build, `up --wait`, and container health/readiness
-  were not executed. The local `initdb`/`pg_ctl` fallback was used and is reported
-  above; treat the Compose runtime path as **unverified here**, not failed and not
-  passed.
+- Docker daemon: the Compose runtime path was originally unverified here; it was
+  exercised successfully later in the day once the daemon became available. See
+  `Post-execution verification (2026-11-17, Docker available)` below, which
+  supersedes the original caveat.
 - Live Clerk dashboard configuration and the browser journeys remain manual/Phase 5
   as stated above.
 - Pre-existing Vite+ format-check debt is recorded in
   `.planning/phases/01-platform-foundation-identity/deferred-items.md`; the format
   step is disabled in the enforced gate and is not claimed as passing.
+
+---
+
+## Post-execution verification (2026-11-17, Docker available)
+
+After the report above, the Docker daemon became available and the owner asked
+that the manual/environment items be exercised rather than deferred. The
+following was actually run and recorded.
+
+### Docker Compose runtime smoke — PASS
+- `docker compose config --quiet` → exit 0.
+- `docker compose build --no-cache api` → exit 0 (multi-stage build).
+- `docker compose up -d --wait --wait-timeout 180` → exit 0; both services
+  reported `Up (healthy)`; `postgres:17-alpine` healthy; migration applied by
+  `db:deploy` before the API served traffic.
+- Live HTTP probes against the running stack:
+  - `GET /health/live` → 200 `{"status":"ok"}`
+  - `GET /health/ready` → 200 `{"status":"ok","checks":{"database":{"status":"up"}}}`
+  - `GET /users/me` without bearer → 401 `UNAUTHENTICATED` (sanitized envelope)
+  - `GET /users/me` with a bogus bearer → 401 `UNAUTHENTICATED`
+
+### Two real defects found by the smoke and fixed
+1. `apps/api/Dockerfile`: `pnpm prune --prod` aborted in the non-interactive
+   build (`ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`); after setting `CI=true`
+   it still dropped the workspace `.bin` links, so `prisma migrate deploy`
+   failed with `prisma: not found`. Replaced with
+   `CI=true pnpm install --prod --frozen-lockfile --offline`, which prunes dev
+   dependencies AND recreates the bin links. A clean `--no-cache` build then
+   passed and the stack reached healthy.
+2. `apps/api/src/common/database/schema.spec.ts`: the `ON DELETE RESTRICT` test
+   hardcoded SQLSTATE `23001` (PostgreSQL 18), but the declared Compose runtime
+   is `postgres:17-alpine`, which returns `23503`. `expectPgError` now accepts a
+   list of codes and the test accepts both. The full gate passes against the
+   real container runtime as a result.
+
+### Live authenticated API flow (agentic equivalent of Postman)
+Using a throwaway locally generated RSA key pair and a Clerk-format RS256 token
+— the same technique as the automated verifier tests, with no real credentials
+and nothing committed — the full flow was exercised over HTTP against the
+running stack and real PostgreSQL:
+- `GET /users/me` with the signed bearer → 200; local user provisioned with
+  `["CUSTOMER","ADMIN"]` (first-create admin rule, `emailVerified=true`).
+- Repeat `GET /users/me` → 200 with the SAME id (conflict-safe, no duplicate).
+- `DELETE /users/me` → 409 `PROVIDER_REVOCATION_FAILED`,
+  `lifecycleStatus: ANONYMIZED` — the fail-closed path: local anonymization
+  completed, provider revocation cannot succeed with placeholder Clerk config,
+  so the failure is surfaced rather than silently passing.
+- `GET /users/me` reusing the SAME still-cryptographically-valid token → 401:
+  the keyed tombstone denies the deleted subject (copied-token guarantee).
+- Database inspection confirmed: user row `clerk_subject`, `email` and
+  `display_name` = NULL, `lifecycle_status = ANONYMIZED`, ADMIN capability
+  removed; `identity_tombstones` holds only a 64-character HMAC
+  `subject_digest` with `expires_at = NULL` (permanent),
+  `provider_revocation_outcome = FAILED` after 3 attempts; the raw subject
+  appears zero times in user/tombstone rows; lifecycle events =
+  CAPABILITY_REVOKED, PROFILE_ANONYMIZED, TOMBSTONE_WRITTEN,
+  PROVIDER_REVOCATION_FAILED.
+
+### Full gate with Docker available — PASS
+`pnpm run verify:phase-01` → exit 0 on two consecutive runs, now with the
+Compose build step actually executing. 18 files / 110 tests passed; lint
+0 errors.
+
+### Still outstanding
+- Live Clerk dashboard configuration — owner-only manual check (guidance:
+  `docs/identity/clerk-integration.md` → `Live Clerk verification procedure`).
+- Browser sign-up/sign-in/session-persistence/sign-out — Phase 5 deliverable;
+  no browser UI exists in Phase 1.
+
+### Teardown
+The Compose stack was stopped and removed after verification (`docker compose
+down -v`); ports 3000/5432 are free; the throwaway key/token files were deleted.
+The Docker engine itself was left running as requested.
