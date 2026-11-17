@@ -1,0 +1,188 @@
+// Phase 1 identity foundation (Plan 01-04).
+//
+// Lifecycle decisions encoded here come from the owner resolutions of
+// 2026-11-17 recorded in .planning/PROJECT.md and 01-CONTEXT.md:
+//  - staged closure: never cascade-delete records needed for orders/audit;
+//    stop new sales, retain store/merchant/order records, allow restricted
+//    completion/refund work, and anonymize only once obligations resolve;
+//  - keyed permanent tombstone: only an HMAC digest is stored, never a raw
+//    Clerk subject or email. No legal retention period is invented here.
+//
+// This is foundation schema capacity only. No gallery module, store, order or
+// product behaviour is implemented by this plan.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserLifecycleStatus {
+  ACTIVE
+  CLOSURE_REQUESTED
+  CLOSURE_ACCEPTED
+  ANONYMIZED
+}
+
+enum StoreLifecycleStatus {
+  ACTIVE
+  CLOSURE_REQUESTED
+  CLOSED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  PAYMENT_FAILED
+}
+
+enum Capability {
+  CUSTOMER
+  MERCHANT
+  ADMIN
+}
+
+enum TombstoneRevocationOutcome {
+  PENDING
+  REVOKED
+  FAILED
+}
+
+enum LifecycleEventType {
+  CAPABILITY_GRANTED
+  CAPABILITY_REVOKED
+  CLOSURE_REQUESTED
+  CLOSURE_ACCEPTED
+  OBLIGATIONS_RESOLVED
+  PROFILE_ANONYMIZED
+  TOMBSTONE_WRITTEN
+  PROVIDER_REVOCATION_ATTEMPTED
+  PROVIDER_REVOCATION_SUCCEEDED
+  PROVIDER_REVOCATION_FAILED
+}
+
+/// Stable local identity. The row is never deleted for business reasons; D-07
+/// anonymization clears the PII columns in the same transaction that writes a
+/// tombstone, so store and order references survive.
+model User {
+  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clerkSubject    String?              @unique @map("clerk_subject") @db.VarChar(255)
+  email           String?              @map("email") @db.VarChar(320)
+  displayName     String?              @map("display_name") @db.VarChar(150)
+  lifecycleStatus UserLifecycleStatus  @default(ACTIVE) @map("lifecycle_status")
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  capabilities    UserCapability[]
+  stores          Store[]
+  orders          Order[]
+  lifecycleEvents LifecycleEvent[]
+
+  @@map("users")
+}
+
+/// Customer is the baseline; merchant and admin are additive, independent
+/// capabilities (D-05). The unique pair enforces "one instance per capability".
+model UserCapability {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String     @map("user_id") @db.Uuid
+  capability Capability
+  grantedAt  DateTime   @default(now()) @map("granted_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, capability])
+  @@map("user_capabilities")
+}
+
+/// Retained business record for a merchant. CLOSED stops new sales while the
+/// owner keeps restricted completion/refund access (D-08/D-09).
+model Store {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerUserId String               @map("owner_user_id") @db.Uuid
+  name        String               @db.VarChar(200)
+  status      StoreLifecycleStatus @default(ACTIVE)
+  createdAt   DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  owner  User    @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  orders Order[]
+
+  // Owner-scoped merchant queries always filter by ownerUserId.
+  @@index([ownerUserId], map: "stores_owner_user_id_idx")
+  @@map("stores")
+}
+
+/// Retained buyer reference. Status distinguishes in-flight obligations
+/// (PENDING_PAYMENT/PAID/SHIPPED) from terminal ones (DELIVERED/CANCELLED/
+/// PAYMENT_FAILED) without inventing payment or refund behaviour here.
+model Order {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  buyerUserId String       @map("buyer_user_id") @db.Uuid
+  storeId     String       @map("store_id") @db.Uuid
+  status      OrderStatus  @default(PENDING_PAYMENT)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  buyer User  @relation(fields: [buyerUserId], references: [id], onDelete: Restrict)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Restrict)
+
+  // Ownership-scoped order queries always filter by buyerUserId.
+  @@index([buyerUserId], map: "orders_buyer_user_id_idx")
+  @@map("orders")
+}
+
+/// Keyed permanent tombstone. subjectDigest is an HMAC of the Clerk `sub`
+/// with a server-side secret: no raw subject, email or other PII is stored.
+/// Local-first and authoritative; provider revocation is tracked separately
+/// and never restores access on failure (fail closed).
+model IdentityTombstone {
+  id                            String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subjectDigest                 String                      @unique @map("subject_digest") @db.VarChar(64)
+  expiresAt                     DateTime?                   @map("expires_at") @db.Timestamptz(6)
+  providerRevocationOutcome     TombstoneRevocationOutcome  @default(PENDING) @map("provider_revocation_outcome")
+  providerRevocationAttempts    Int                         @default(0) @map("provider_revocation_attempts")
+  providerRevocationLastErrorCode String?                   @map("provider_revocation_last_error_code") @db.VarChar(128)
+  providerRevokedAt             DateTime?                   @map("provider_revoked_at") @db.Timestamptz(6)
+  createdAt                     DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("identity_tombstones")
+}
+
+/// Append-only audit trail for anonymization, closure and provider outcomes.
+/// `detail` is non-PII and sanitized; no tokens or profile values are stored.
+/// The migration adds a trigger that rejects UPDATE and DELETE.
+model LifecycleEvent {
+  id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String?             @map("user_id") @db.Uuid
+  eventType  LifecycleEventType @map("event_type")
+  outcome    String?             @db.VarChar(64)
+  detail     String?             @db.VarChar(500)
+  occurredAt DateTime            @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId], map: "lifecycle_events_user_id_idx")
+  @@map("lifecycle_events")
+}
+
+/// Phase 1 schema capacity for the later ~200 curated free-stock gallery seed.
+/// No gallery module, API, CRUD, seed pipeline, picker or product-image
+/// behaviour is created by this plan (Phase 2 owns those).
+model GalleryAsset {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sourceUrl     String    @map("source_url") @db.VarChar(2048)
+  displayName   String    @map("display_name") @db.VarChar(200)
+  category      String    @db.VarChar(100)
+  tags          String[]  @default([])
+  deactivatedAt DateTime? @map("deactivated_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("gallery_assets")
+}
