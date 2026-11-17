@@ -39,7 +39,7 @@ This roadmap delivers Stage 1 of the marketplace-lite e-commerce application: a 
 
 Plans:
 - [x] 01-01-PLAN.md — Verify the SUS Vitest dependency before any install
-- [ ] 01-02-PLAN.md — Create the pinned pnpm/Vite+ workspace, NestJS API, and test harness
+- [x] 01-02-PLAN.md — Create the pinned pnpm/Vite+ workspace, NestJS API, and test harness
 - [x] 01-03-PLAN.md — Resolve account-deletion, merchant-closure, tombstone, and Clerk-revocation policy
 - [ ] 01-04-PLAN.md — Establish the Prisma schema, migration, and database runtime foundation
 - [ ] 01-05-PLAN.md — Add global validation, Pino logging, health probes, and Docker Compose
@@ -177,7 +177,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (∥ 6) → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Identity | 2/9 | In Progress|  |
+| 1. Platform Foundation & Identity | 3/9 | In Progress|  |
 | 2. Gallery, Stores & Catalogue | 0/TBD | Not started | - |
 | 3. Cart, Checkout, Payments & Orders | 0/TBD | Not started | - |
 | 4. Admin Backend & Contract Freeze | 0/TBD | Not started | - |
