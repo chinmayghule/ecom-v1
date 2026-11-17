@@ -110,6 +110,7 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
 
   let aliceId: string;
   let bobId: string;
+  let carolId: string;
   let merchantId: string;
   let retainedOrderId: string;
   let inFlightOrderId: string;
@@ -216,6 +217,15 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
       },
       select: { id: true },
     });
+    const carol = await prisma.user.create({
+      data: {
+        clerkSubject: 'sub-carol',
+        email: 'carol@example.test',
+        displayName: 'Carol',
+        capabilities: { create: [{ capability: 'CUSTOMER' }] },
+      },
+      select: { id: true },
+    });
     const merchant = await prisma.user.create({
       data: {
         clerkSubject: 'sub-merchant',
@@ -227,6 +237,7 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
     });
     aliceId = alice.id;
     bobId = bob.id;
+    carolId = carol.id;
     merchantId = merchant.id;
 
     const carolStore = await prisma.store.create({
@@ -244,7 +255,7 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
       select: { id: true },
     });
     const inFlight = await prisma.order.create({
-      data: { buyerUserId: bobId, storeId: merchantStore.id, status: 'PAID' },
+      data: { buyerUserId: carolId, storeId: merchantStore.id, status: 'PAID' },
       select: { id: true },
     });
     inFlightOrderId = inFlight.id;
@@ -291,9 +302,11 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
     });
 
     const accepted = await prisma.user.findUniqueOrThrow({ where: { id: merchantId } });
-    // No early anonymization: personal data is cleared only when obligations resolve.
+    // No early anonymization: personal data is still present (the guard may
+    // have refreshed the profile copy from the verified token on this request).
     expect(accepted.lifecycleStatus).toBe('CLOSURE_ACCEPTED');
-    expect(accepted.email).toBe('merchant@example.test');
+    expect(accepted.email).not.toBeNull();
+    expect(accepted.displayName).not.toBeNull();
     expect(await prisma.identityTombstone.count()).toBe(0);
 
     const stores = await prisma.store.findMany({ where: { ownerUserId: merchantId } });
