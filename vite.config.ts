@@ -18,8 +18,9 @@ export default defineConfig({
     // pre-existing formatting differences across planning docs and legacy
     // sources. Reformatting those is out of scope for this integration-proof
     // plan (see .planning/phases/01-platform-foundation-identity/
-    // deferred-items.md). The enforced gate therefore runs the lint + typecheck
-    // steps of the Vite+ check; format debt is recorded, not silently applied.
+    // deferred-items.md). The enforced gate therefore runs the lint step of
+    // the Vite+ check; strict TS typecheck is an explicit API gate step and
+    // format debt is recorded, not silently applied.
     fmt: false,
   },
   test: {

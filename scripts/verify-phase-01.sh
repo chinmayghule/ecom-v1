@@ -32,7 +32,7 @@ export CLERK_WEB_ORIGIN=http://localhost:3000
 export ADMIN_EMAILS=owner@example.test
 export TOMBSTONE_SECRET=local_verify_tombstone_secret
 
-log '==> [1/6] Vite+ check (lint + typecheck; see deferred-items.md for format scope)'
+log '==> [1/6] Vite+ check (lint; strict TS typecheck is an explicit API gate step)'
 pnpm run check
 
 # ---- disposable PostgreSQL for the single db:deploy entrypoint -------------
@@ -91,7 +91,7 @@ log '==> [3/6] Releasing the disposable db:deploy database'
 cleanup
 trap - EXIT
 
-log '==> [4/6] API bundle: build + db:test (apply/reset/re-apply) + full suite'
+log '==> [4/6] API bundle: prisma generate + typecheck + build + db:test (apply/reset/re-apply) + full suite'
 pnpm --filter @ecom-v1/api verify
 
 log '==> [5/6] Compose configuration check'

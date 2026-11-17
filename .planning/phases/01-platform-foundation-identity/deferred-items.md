@@ -15,8 +15,10 @@
   owner-managed uncommitted changes that must not be touched.
 - **Action taken:** Added `fmt: { singleQuote: true }` so `vp fmt` is aligned with the
   committed source style for future work, and configured the enforced `vp check` gate to
-  run its lint + typecheck steps (`check: { fmt: false }`). This keeps `pnpm run check` and
-  the CI/local gate green on the actual committed state. Format debt is recorded here and
-  in `docs/verification/phase-01-verification.md` rather than silently reformatted away.
+  run its lint step (`check: { fmt: false }`). Strict TypeScript typechecking is an
+  explicit API gate step (`pnpm --filter @ecom-v1/api typecheck`) rather than relying on
+  Vite+ lint. This keeps `pnpm run check` and the CI/local gate green on the actual
+  committed state. Format debt is recorded here and in
+  `docs/verification/phase-01-verification.md` rather than silently reformatted away.
 - **Follow-up:** A dedicated formatting/normalisation change (owner-approved) should apply
   `vp fmt --write` across the repository and then re-enable `check.fmt`. Not part of Phase 1.
