@@ -20,6 +20,8 @@ const TEST_ENV = {
   CLERK_SECRET_KEY: 'sk_test_placeholder',
   CLERK_JWT_KEY: 'jwt_test_placeholder',
   CLERK_WEB_ORIGIN: 'http://localhost:3000',
+  CLERK_ISSUER: 'https://clerk.example.test',
+  CLERK_AUDIENCE: 'clerk.example.test',
   ADMIN_EMAILS: 'owner@example.test',
   TOMBSTONE_SECRET: 'tombstone-test-placeholder',
 };

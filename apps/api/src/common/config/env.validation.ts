@@ -42,6 +42,8 @@ export const REQUIRED_ENV_KEYS = [
   'CLERK_SECRET_KEY',
   'CLERK_JWT_KEY',
   'CLERK_WEB_ORIGIN',
+  'CLERK_ISSUER',
+  'CLERK_AUDIENCE',
   'ADMIN_EMAILS',
   'TOMBSTONE_SECRET',
 ] as const;
@@ -71,6 +73,17 @@ class RuntimeEnv {
   @IsNotEmpty()
   CLERK_WEB_ORIGIN!: string;
 
+  /** Expected `iss` claim of Clerk session tokens — an http(s) URL. */
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^https?:\/\//, { message: 'must be an http(s) URL' })
+  CLERK_ISSUER!: string;
+
+  /** Expected `aud` claim of Clerk session tokens (the instance identifier). */
+  @IsString()
+  @IsNotEmpty()
+  CLERK_AUDIENCE!: string;
+
   @IsString()
   @IsNotEmpty()
   ADMIN_EMAILS!: string;
@@ -88,6 +101,9 @@ export interface AppConfig {
   readonly clerkSecretKey: string;
   readonly clerkJwtKey: string;
   readonly clerkWebOrigin: string;
+  /** Pinned `iss` / `aud` claims for fail-closed networkless token verification. */
+  readonly clerkIssuer: string;
+  readonly clerkAudience: string;
   readonly adminEmails: readonly string[];
   /** Server-side HMAC secret for permanent keyed tombstones; never persisted raw. */
   readonly tombstoneSecret: string;
@@ -157,6 +173,8 @@ export function validateEnv(env: NodeJS.ProcessEnv = process.env): AppConfig {
     clerkSecretKey: parsed.CLERK_SECRET_KEY,
     clerkJwtKey: parsed.CLERK_JWT_KEY,
     clerkWebOrigin: parsed.CLERK_WEB_ORIGIN,
+    clerkIssuer: parsed.CLERK_ISSUER.trim(),
+    clerkAudience: parsed.CLERK_AUDIENCE.trim(),
     adminEmails: Object.freeze(adminEmails),
     tombstoneSecret: parsed.TOMBSTONE_SECRET,
     databasePoolMax: DATABASE_POOL_MAX,

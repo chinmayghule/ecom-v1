@@ -35,11 +35,17 @@ function nonEmptyString(value: unknown): string | undefined {
 export class ClerkTokenVerifierService implements ClerkTokenVerifier {
   private readonly jwtKey: string;
   private readonly authorizedParties: readonly string[];
+  private readonly issuer: string;
+  private readonly audience: string;
 
   constructor() {
     const config = validateEnv();
     this.jwtKey = config.clerkJwtKey;
     this.authorizedParties = parseWebOrigins(config.clerkWebOrigin);
+    // Non-empty, validated pins from the typed config. The Clerk SDK treats
+    // absent issuer/audience as no-op checks, so always pass these (IN-02).
+    this.issuer = config.clerkIssuer;
+    this.audience = config.clerkAudience;
     // Defence in depth: never hand an empty allowlist to verifyToken(), which
     // would skip the authorized-party (azp) check entirely (CR-01).
     if (this.authorizedParties.length === 0) {
@@ -57,6 +63,9 @@ export class ClerkTokenVerifierService implements ClerkTokenVerifier {
       const payload = await verifyToken(token, {
         jwtKey: this.jwtKey,
         authorizedParties: [...this.authorizedParties],
+        // Fail closed on issuer/audience, not just signature and party.
+        issuer: this.issuer,
+        audience: this.audience,
       });
       if (payload === undefined || payload === null) {
         throw new Error('empty verified payload');
