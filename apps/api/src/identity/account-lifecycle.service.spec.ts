@@ -132,9 +132,10 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
         clientVersion: '7.10.1',
       }),
     );
-    // First call is the initial status check; the second is the post-conflict
-    // confirmation inside finalize().
-    repo.currentStatus.mockResolvedValueOnce('ACTIVE').mockResolvedValueOnce('ANONYMIZED');
+    // The post-conflict confirmation inside finalize() must see ANONYMIZED
+    // before the idempotent result is returned. (There is no separate
+    // top-of-method status check any more — the global guard owns replay.)
+    repo.currentStatus.mockResolvedValueOnce('ANONYMIZED');
     const revoker = revokerStub();
     const service = serviceWith(repo, revoker);
 
@@ -153,7 +154,7 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
         clientVersion: '7.10.1',
       }),
     );
-    repo.currentStatus.mockResolvedValueOnce('ACTIVE').mockResolvedValueOnce('ANONYMIZED');
+    repo.currentStatus.mockResolvedValueOnce('ANONYMIZED');
     repo.tombstoneFor.mockResolvedValueOnce({ providerRevocationOutcome: 'PENDING' });
     const revoker = revokerStub();
     const service = serviceWith(repo, revoker);
