@@ -1,2 +1,20 @@
 # graphify generated artefacts (rebuilt locally; not shared)
 graphify-out/
+
+# dependencies and framework build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# test and coverage output
+coverage/
+
+# local environment secrets — commit only the template
+.env
+.env.*
+!.env.example
+
+# local Vite+ hook dispatcher state
+.vite-hooks/
+
+# .planning/ is deliberately tracked and must stay tracked.
