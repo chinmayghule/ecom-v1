@@ -52,6 +52,8 @@ proven.
   project's established layout once created).
 - Test names describe observable behaviour: `rejects checkout when stock is
   insufficient`, not `test order service 3`.
+- Put magic numbers in named `SCREAMING_SNAKE_CASE` constants before using them;
+  see `CODING_CONVENTIONS.md` → Named values.
 - Structure with arrange/act/assert; one behaviour per test.
 - Test files mirror the source path so a failure points at the owner of the bug.
 

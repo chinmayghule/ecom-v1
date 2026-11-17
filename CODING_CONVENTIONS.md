@@ -39,11 +39,19 @@ assume them before scaffolding creates them.
   `*.controller.ts`, `*.service.ts`, `*.dto.ts`. React: PascalCase component
   files. PostgreSQL: `snake_case` identifiers.
 - Values and functions `camelCase`, types and classes `PascalCase`, constants
-  `SCREAMING_SNAKE_CASE` only for genuine constants.
+  `SCREAMING_SNAKE_CASE` for genuine constants and named test fixtures.
 - Name by domain intent: `placeOrder`, `applyInventoryAdjustment`. Avoid
   `processData`, `handleThing`, `utils`, `helper`.
 - One public export per file where practical; keep a file's name matching its
   main export.
+
+### Named values
+
+- Avoid bare numbers in code and in tests: put the value in a
+  `SCREAMING_SNAKE_CASE` name first, then use the name. Compare against
+  `EXPECTED_TOTAL_WITH_SHIPPING`, not a literal amount. The name states the intent
+  and gives the value one place to change. Loop counters and the obvious `0`/`1`
+  idioms are exempt.
 
 ## Architecture and modularity
 
@@ -59,6 +67,18 @@ assume them before scaffolding creates them.
 - Prefer explicit, slightly repetitive code over a configuration-driven
   abstraction that only its author understands.
 - Delete dead code. Do not leave commented-out implementations or unused exports.
+
+### SOLID principles
+
+- Apply SOLID where it genuinely improves the design: one responsibility per
+  service or module; extend behaviour without rewriting callers when variation is
+  real; keep module interfaces narrow; depend on abstractions at module edges
+  rather than reaching into another module's concrete repository; and let
+  implementations honour the contracts their interfaces promise.
+- Do not invent an interface or base class for a single implementation. The
+  "no premature abstraction" rule above still governs.
+- When a principle would add machinery without a real need, choose the simpler
+  design and state the reason.
 
 ## Validation and error handling
 
