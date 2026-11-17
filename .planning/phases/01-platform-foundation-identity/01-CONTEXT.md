@@ -38,6 +38,17 @@ Phase 1 does not build the merchant gallery, product/catalogue modules, storefro
 - Use standard, mature technical patterns within the approved product boundaries. Research current Clerk/NestJS integration and applicable database/provider details; do not silently change the identity provider, role model, deletion semantics, or approved stack.
 - Design implementation details for staged closure (including states/authorization) during research/planning, but preserve the product outcomes above and escalate any legal/privacy policy decision that cannot be resolved from project context.
 
+### Owner Resolution (2026-11-17) — binding on downstream implementation
+
+The owner answered the two blocking questions escalated by Plan 01-03. These selections are binding on Plans 01-04, 01-06, 01-07 and 01-08 and do not change D-01 through D-11. Exact lifecycle state names, closure authorization/reopen rules and retention periods were explicitly delegated to downstream research/planning; no legal retention duration or state name is invented here.
+
+#### Merchant-obligation deletion behavior — `staged-closure` (owner selection, 2026-11-17)
+- Applies to the locked outcomes D-07, D-08 and D-09: anonymize personal data; never cascade-delete records needed for orders/audit; do not leave a closed merchant's products selling indefinitely; do not strand in-flight orders/refunds.
+- The signed-in account owner (the user) may request closure.
+- On accepted closure: stop new sales; retain store, merchant and order records; allow only restricted completion/refund actions until outstanding obligations resolve.
+- Final anonymization of personal data is permitted **only when outstanding obligations are resolved** (D-08), subject to legally required retention. This is the sole anonymization trigger for this identity lifecycle and is not a general product-policy rule.
+- Implementation constraint: Plans 01-04 (schema) and 01-08 (deletion/closure implementation) design the exact lifecycle states, who may authorize/reopen closure, and the obligation-resolution mechanism under these locked outcomes. Downstream plans record those details; this resolution does not preselect state names, authority rules or a legal retention period.
+
 </decisions>
 
 <canonical_refs>
