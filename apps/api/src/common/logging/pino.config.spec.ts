@@ -74,12 +74,14 @@ describe('Pino structured request logging boundary', () => {
     expect(lines).toHaveLength(1);
     const record = lines[0]!.payload;
     const serialized = JSON.stringify(record);
+    const request = record['req'] as Record<string, unknown>;
 
     expect(record['requestId']).toBe('req-stable-7');
     expect(record['outcome']).toBe('success');
-    expect(record['method']).toBe('POST');
-    expect(record['route']).toBe('/me');
-    expect(record['path']).toBe('/me');
+    expect(request['id']).toBe('req-stable-7');
+    expect(request['method']).toBe('POST');
+    expect(request['route']).toBe('/me');
+    expect(request['path']).toBe('/me');
 
     for (const value of DANGEROUS_VALUES) {
       expect(serialized).not.toContain(value);

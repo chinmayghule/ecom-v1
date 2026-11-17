@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
+import { LoggingModule } from './common/logging/logging.module';
 
 /**
  * Root application module.
  *
- * Later Phase 1 plans attach identity, database and operational modules here.
- * This scaffold deliberately exposes no endpoints and adds no domain behaviour.
+ * The Pino provider is global so every request and the error sink share one
+ * structured logger. Database and health modules are attached by the next task.
  */
-@Module({})
+@Module({
+  imports: [LoggingModule],
+})
 export class AppModule {}

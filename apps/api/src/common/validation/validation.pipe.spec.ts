@@ -39,6 +39,9 @@ class ThingParamDto {
   id!: string;
 }
 
+/** A DTO with no declared fields — any incoming field must be rejected. */
+class EmptyDto {}
+
 let controllerCalls = 0;
 
 @Controller('things')
@@ -62,7 +65,7 @@ class ThingsController {
   }
 
   @Post('raw')
-  raw(@Body() body: object): object {
+  raw(@Body() body: EmptyDto): object {
     controllerCalls += 1;
     return { ok: true, body };
   }
