@@ -11,7 +11,11 @@ import {
 } from '../common/config/env.validation';
 import { isAdminOnFirstCreate } from './admin-bootstrap.policy';
 import { IdentityRepository, subjectDigestFor, type LocalUserRecord } from './identity.repository';
-import type { ResolvedIdentity, ResolveVerifiedIdentityInput } from './identity.types';
+import type {
+  ResolvedIdentity,
+  ResolveVerifiedIdentityInput,
+  UserProfile,
+} from './identity.types';
 
 /** The config slice this module owns. */
 export type IdentityConfig = Pick<AppConfig, 'adminEmails' | 'tombstoneSecret'>;
@@ -107,6 +111,21 @@ export class IdentityService implements IdentityResolver {
       return { user: toAuthenticatedUser(raced), created: false };
     }
     return { user: toAuthenticatedUser(created), created: true };
+  }
+
+  /**
+   * Thin, server-derived projection for the current-profile endpoint.
+   *
+   * Copies only the allowed fields; the Clerk subject and all lifecycle,
+   * tombstone and provider internals never leave this boundary.
+   */
+  currentProfile(user: AuthenticatedUser): UserProfile {
+    return Object.freeze<UserProfile>({
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      capabilities: Object.freeze([...user.capabilities]),
+    });
   }
 
   /** Explicit local admin/capability operations for later administrative use. */

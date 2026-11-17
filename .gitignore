@@ -9,6 +9,9 @@ dist/
 # test and coverage output
 coverage/
 
+# generated OpenAPI baseline (rebuilt with pnpm --filter @ecom-v1/api openapi:emit)
+apps/api/.generated/
+
 # local environment secrets — commit only the template
 .env
 .env.*

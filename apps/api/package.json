@@ -10,7 +10,8 @@
     "test:watch": "vp test watch",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
-    "db:test": "bash scripts/test-migrations.sh"
+    "db:test": "bash scripts/test-migrations.sh",
+    "openapi:emit": "nest build && node scripts/emit-openapi.cjs"
   },
   "dependencies": {
     "@clerk/backend": "3.29.0",

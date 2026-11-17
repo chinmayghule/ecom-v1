@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { HealthModule } from './health/health.module';
 import { LoggingModule } from './common/logging/logging.module';
 import { IdentityModule } from './identity/identity.module';
+import { IdentityController } from './identity/identity.controller';
 import { AuthModule } from './common/auth/auth.module';
 
 /**
@@ -13,5 +14,8 @@ import { AuthModule } from './common/auth/auth.module';
  */
 @Module({
   imports: [LoggingModule, HealthModule, IdentityModule, AuthModule],
+  // The controller is registered at the root so it consumes the exported
+  // IdentityService; it adds no new document source or module to the graph.
+  controllers: [IdentityController],
 })
 export class AppModule {}
