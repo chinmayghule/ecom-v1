@@ -12,7 +12,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:test": "bash scripts/test-migrations.sh",
     "openapi:emit": "nest build && node scripts/emit-openapi.cjs",
-    "verify": "pnpm run build && pnpm run db:test && pnpm test"
+    "verify": "pnpm run db:generate && pnpm run typecheck && pnpm run build && pnpm run db:test && pnpm test"
   },
   "dependencies": {
     "@clerk/backend": "3.29.0",
