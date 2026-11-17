@@ -8,9 +8,14 @@ naming are in `GIT_CONVENTIONS.md`.
 Checked 2026-11-16 against `chinmayghule/ecom-v1`:
 
 - `main` is the only branch; there is no `dev`, `staging` or release branch.
-- `main` has **no branch protection and no rulesets**.
 - All three merge methods are enabled; delete-branch-on-merge is off.
-- GitHub Actions is enabled, but no workflow exists yet.
+
+Checked 2026-11-17:
+
+- Branch protection on `main` blocks force pushes and deletion of the branch. No
+  status checks or approvals are required; GitHub rejects self-approval in a
+  single-reviewer repository, so a required approval would block agent PRs.
+- A push/PR CI workflow exists at `.github/workflows/ci.yml`.
 
 Everything below is the intended process, not a description of enforced
 settings. If a rule matters, it must be enforced by the owner in GitHub — this
