@@ -110,8 +110,15 @@ beforeAll(async () => {
     run('psql', ['--no-psqlrc', '-q', '-v', 'ON_ERROR_STOP=1', '-f', migrationPath, databaseUrl]);
   }
 
+  // beforeAll runs before the shared setup file's per-test defaults, so set
+  // every required variable explicitly before constructing PrismaService.
   process.env['DATABASE_URL'] = databaseUrl;
   process.env['DIRECT_URL'] = databaseUrl;
+  process.env['CLERK_SECRET_KEY'] = 'sk_test_placeholder';
+  process.env['CLERK_JWT_KEY'] = 'jwt_test_placeholder';
+  process.env['CLERK_WEB_ORIGIN'] = 'http://localhost:3000';
+  process.env['ADMIN_EMAILS'] = 'owner@example.test';
+  process.env['TOMBSTONE_SECRET'] = 'test-tombstone-hmac-secret';
   prisma = new PrismaService();
   await prisma.onModuleInit();
   service = new IdentityService(new IdentityRepository(prisma), TEST_IDENTITY_CONFIG);
