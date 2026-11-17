@@ -45,7 +45,7 @@ Plans:
 - [x] 01-05-PLAN.md — Add global validation, Pino logging, health probes, and Docker Compose
 - [x] 01-06-PLAN.md — Verify Clerk sessions and provision race-safe local users with capabilities
 - [x] 01-07-PLAN.md — Enforce capabilities/ownership and define the Clerk profile/session contract
-- [ ] 01-08-PLAN.md — Implement owner-approved account deletion, merchant closure, and provider revocation
+- [x] 01-08-PLAN.md — Implement owner-approved account deletion, merchant closure, and provider revocation
 - [ ] 01-09-PLAN.md — Add CI, phase acceptance tests, journey contracts, and clean-snapshot verification
 
 Notes:
@@ -177,7 +177,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (∥ 6) → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Identity | 7/9 | In Progress|  |
+| 1. Platform Foundation & Identity | 8/9 | In Progress|  |
 | 2. Gallery, Stores & Catalogue | 0/TBD | Not started | - |
 | 3. Cart, Checkout, Payments & Orders | 0/TBD | Not started | - |
 | 4. Admin Backend & Contract Freeze | 0/TBD | Not started | - |
