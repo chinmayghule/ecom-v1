@@ -42,8 +42,8 @@ Live authenticated API flow (throwaway locally signed RS256 token, no real crede
 ## Post-review state (2026-11-17)
 
 - Code review and fixes were completed in a separate session: `01-REVIEW-FIX.md` records `status: all_fixed` (3 Info findings IN-01..IN-03, on top of earlier WR-01..WR-05 and CR-01 fixes), final commit `76d1ba7`.
-- Fix verification so far: `pnpm run typecheck` plus relevant Vitest specs after each fix, and the full API suite once after the final fix (18 files / 114 tests).
-- **Outstanding:** the full gate `pnpm run verify:phase-01` has NOT been re-run after the review fixes, and is a precondition for `/gsd-verify-work` (`.planning/phases/01-platform-foundation-identity/01-VALIDATION.md:42`). It must be green before verification resumes.
+- Fix verification: `pnpm run typecheck` plus relevant Vitest specs after each fix, and the full API suite once after the final fix (18 files / 114 tests).
+- **Owner-confirmed (2026-11-17):** `pnpm run verify:phase-01` and `/gsd-verify-work 1` were both run in another session. `01-VERIFICATION.md` records 14/14 must-have truths verified, full gate exit 0, and status `human_needed` solely for the manual/live items. The gate precondition is therefore satisfied, not outstanding.
 - Owner workflow preference: per-phase UAT files are generated only after all Stage 1 implementation phases are complete; the owner will test them in one dedicated session afterward. This file remains the human-only record and is not resumed in the meantime (recorded in `.planning/STATE.md`).
 
 ## Summary
