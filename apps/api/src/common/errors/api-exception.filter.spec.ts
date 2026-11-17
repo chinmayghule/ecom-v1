@@ -160,11 +160,12 @@ describe('global sanitized exception filter', () => {
     await buildApp();
     const response = await request(app!.getHttpServer())
       .get('/errors/unexpected')
-      .set('x-request-id', 'bad\nvalue with spaces '.repeat(20))
+      .set('x-request-id', `x-${'a'.repeat(300)} with spaces`)
       .expect(500);
 
     const requestId = String(response.body['requestId']);
     expect(requestId.length).toBeLessThanOrEqual(128);
-    expect(requestId).not.toContain('\n');
+    expect(requestId).not.toContain(' ');
+    expect(requestId).toMatch(/^[0-9a-f-]{36}$/);
   });
 });
