@@ -71,13 +71,13 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
     expect(repo.finalizeAnonymization).toHaveBeenCalledTimes(1);
     const input = repo.finalizeAnonymization.mock.calls[0]?.[0] as {
       userId: string;
-      clerkSubject: string;
       subjectDigest: string;
     };
     expect(input.userId).toBe(user.id);
-    expect(input.clerkSubject).toBe(user.clerkUserId);
     expect(input.subjectDigest).toBe(subjectDigestFor(user.clerkUserId, SECRET));
     expect(input.subjectDigest).not.toContain(user.clerkUserId);
+    // The raw Clerk subject is never handed to the persistence boundary.
+    expect(input).not.toHaveProperty('clerkSubject');
     expect(repo.acceptClosure).not.toHaveBeenCalled();
   });
 
