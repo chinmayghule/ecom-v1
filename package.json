@@ -9,7 +9,8 @@
   "scripts": {
     "check": "vp check",
     "test": "vp test run",
-    "build:api": "pnpm --filter @ecom-v1/api build"
+    "build:api": "pnpm --filter @ecom-v1/api build",
+    "verify:phase-01": "bash scripts/verify-phase-01.sh"
   },
   "devDependencies": {
     "vite-plus": "1.6.0"
