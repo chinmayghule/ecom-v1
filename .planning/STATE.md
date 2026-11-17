@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-06-PLAN.md
-last_updated: "2026-11-17T07:40:09.128Z"
+stopped_at: Completed 01-07-PLAN.md
+last_updated: "2026-11-17T07:52:56Z"
 last_activity: 2026-11-17
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 7
+  percent: 78
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 (platform-foundation-identity) — EXECUTING
-Plan: 7 of 9
+Plan: 8 of 9
 Status: Ready to execute
 Last activity: 2026-11-17
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [███████░░░] 67%
 | Phase 01 P04 | 13min | 2 tasks | 10 files |
 | Phase 01 P05 | 10min | 3 tasks | 25 files |
 | Phase 01 P06 | 9min | 3 tasks | 17 files |
+| Phase 01 P07 | 9min | 3 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,10 @@ Recent decisions affecting current work:
 - [Phase 01]: Clerk verification uses the official @clerk/backend verifyToken with a networkless PEM key and explicit authorized parties; bearer-only transport, 401 auth failure vs 403 incomplete profile — No official NestJS Clerk SDK; claims must be networkless and authorized-party checked
 - [Phase 01]: Race-safe local provisioning on unique Clerk subject; admin granted only on first create from a verified allowlisted email and never on later profile refresh — D-02/D-04: immutable external key and explicit capability changes only
 - [Phase 01]: Global guard denies by default, bypasses only explicit IS_PUBLIC routes, and denies keyed-tombstoned subjects before any profile is read — D-06 and owner tombstone resolution: local state is authoritative
+- [Phase 01]: Capability guard reads only Reflector metadata and the guard-resolved local user; customer is implicit baseline, only MERCHANT/ADMIN can be required, and a client cannot supply a role/owner field — T-07-01/T-07-05: frontend checks are never a security boundary
+- [Phase 01]: GET /users/me returns only id/email/displayName/capabilities from a thin controller; null profile fields mean anonymized, and the Clerk subject/tombstone/audit never leave the boundary — T-07-04: minimal server-derived contract
+- [Phase 01]: Private-resource fixtures put the resource id AND current local user id in one database predicate; foreign rows are non-disclosing 404, never fetched then rejected — T-07-02/D-06: ownership enforced in SQL
+- [Phase 01]: openapi.ts remains the sole OpenAPI assembler with a deterministic gitignored baseline; @hey-api/openapi-ts 0.99.0 is recorded as the Phase 4 generator choice, not installed here — OpenAPI single source, Phase 1 document unfrozen
 
 ### Pending Todos
 
@@ -107,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-17T07:40:09.096Z
-Stopped at: Completed 01-06-PLAN.md
+Last session: 2026-11-17T07:52:56Z
+Stopped at: Completed 01-07-PLAN.md
 Resume file: None

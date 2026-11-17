@@ -9,9 +9,9 @@
 
 ### Identity & Accounts
 
-- [ ] **AUTH-01**: Visitor can register through Clerk with email and a required display name
+- [x] **AUTH-01**: Visitor can register through Clerk with email and a required display name
 - [x] **AUTH-02**: User can sign in and remain signed in across browser sessions
-- [ ] **AUTH-03**: User can sign out from the application
+- [x] **AUTH-03**: User can sign out from the application
 - [x] **AUTH-04**: First sign-in provisions a local application user from the verified Clerk identity (no webhooks)
 - [x] **AUTH-05**: A verified Clerk email matching the admin env-configured list grants the platform-admin role on first sign-in
 - [ ] **AUTH-06**: User can delete their account; personal profile data is anonymized while order records are retained with an anonymized buyer reference
@@ -85,7 +85,7 @@
 
 ### Platform & Delivery
 
-- [ ] **OPS-01**: Every API endpoint enforces server-side input validation, authorization and resource ownership (frontend guards are not a security boundary)
+- [x] **OPS-01**: Every API endpoint enforces server-side input validation, authorization and resource ownership (frontend guards are not a security boundary)
 - [ ] **OPS-02**: API contract is OpenAPI (single source of truth); the frontend consumes a generated API client
 - [x] **OPS-03**: Pino structured application logging and health endpoints provide useful local/demo operational visibility
 - [ ] **OPS-04**: Automated tests cover important business rules, API behaviour and end-to-end journeys (Vitest, Supertest, React Testing Library, Playwright)
@@ -134,9 +134,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
 | AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Complete |
 | AUTH-06 | Phase 1 | Pending |
@@ -186,7 +186,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMN-04 | Phase 2 | Pending |
 | ADMN-05 | Phase 4 | Pending |
 | ADMN-06 | Phase 4 | Pending |
-| OPS-01 | Phase 1 | Pending |
+| OPS-01 | Phase 1 | Complete |
 | OPS-02 | Phase 4 | Pending |
 | OPS-03 | Phase 1 | Complete |
 | OPS-04 | Phase 7 | Pending |
