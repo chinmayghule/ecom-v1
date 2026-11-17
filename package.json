@@ -1,0 +1,17 @@
+{
+  "name": "ecom-v1",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.5.2",
+  "engines": {
+    "node": "24.22.2"
+  },
+  "scripts": {
+    "check": "vp check",
+    "test": "vp test run",
+    "build:api": "pnpm --filter @ecom-v1/api build"
+  },
+  "devDependencies": {
+    "vite-plus": "1.6.0"
+  }
+}
