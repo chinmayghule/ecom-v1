@@ -3,9 +3,10 @@
 What to test, at which level, and what "passing" means.
 
 Current tooling direction from the master document: Vitest, Supertest, React
-Testing Library and Playwright, run through Vite+. **No configuration or commands
-exist yet.** Do not cite script names until the workspace defines them; refer to
-"the test script configured for that package".
+Testing Library and Playwright, run through Vite+. The workspace now defines its
+commands in `package.json` and `.github/workflows/ci.yml`; the local equivalent
+of the CI gate is `pnpm run verify:phase-01`. Cite script names only when they are
+defined in `package.json`.
 
 ## Test levels
 
