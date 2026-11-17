@@ -31,6 +31,7 @@ interface RepositoryStub {
   hasOutstandingObligations: ReturnType<typeof vi.fn>;
   acceptClosure: ReturnType<typeof vi.fn>;
   finalizeAnonymization: ReturnType<typeof vi.fn>;
+  tombstoneFor: ReturnType<typeof vi.fn>;
 }
 
 function repositoryStub(obligations = false, status = 'ACTIVE'): RepositoryStub {
@@ -39,6 +40,7 @@ function repositoryStub(obligations = false, status = 'ACTIVE'): RepositoryStub 
     hasOutstandingObligations: vi.fn(async () => obligations),
     acceptClosure: vi.fn(async () => undefined),
     finalizeAnonymization: vi.fn(async () => undefined),
+    tombstoneFor: vi.fn(async () => ({ providerRevocationOutcome: 'REVOKED' })),
   };
 }
 
@@ -121,12 +123,33 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
     // First call is the initial status check; the second is the post-conflict
     // confirmation inside finalize().
     repo.currentStatus.mockResolvedValueOnce('ACTIVE').mockResolvedValueOnce('ANONYMIZED');
-    const service = serviceWith(repo);
+    const revoker = revokerStub();
+    const service = serviceWith(repo, revoker);
 
     const result = await service.deleteAccount(makeUser());
 
     expect(result).toEqual({ code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' });
     expect(repo.currentStatus).toHaveBeenCalledWith('user-1');
+    // The winner already recorded REVOKED — never call the provider again.
+    expect(revoker.revoke).not.toHaveBeenCalled();
+  });
+
+  it('still revokes when a losing request finds the winner outcome only pending', async () => {
+    repo.finalizeAnonymization.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('unique', {
+        code: 'P2002',
+        clientVersion: '7.10.1',
+      }),
+    );
+    repo.currentStatus.mockResolvedValueOnce('ACTIVE').mockResolvedValueOnce('ANONYMIZED');
+    repo.tombstoneFor.mockResolvedValueOnce({ providerRevocationOutcome: 'PENDING' });
+    const revoker = revokerStub();
+    const service = serviceWith(repo, revoker);
+
+    const result = await service.deleteAccount(makeUser());
+
+    expect(result).toEqual({ code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' });
+    expect(revoker.revoke).toHaveBeenCalledTimes(1);
   });
 
   it('conflicts on a tombstone conflict when local anonymization cannot be confirmed', async () => {
