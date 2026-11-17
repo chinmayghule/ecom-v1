@@ -95,6 +95,12 @@ The tombstone is a **permanent, keyed pseudonymous deny marker**:
   cannot create a new local user.
 - A duplicate digest (concurrent deletion) is treated as an already-denied
   subject; it does not create a second identity.
+- `TOMBSTONE_SECRET` is **immutable key material**. `validateEnv()` rejects
+  short or obviously placeholder values at startup. Rotating or losing it
+  invalidates every stored digest: a deleted subject with a still-valid token
+  would no longer match its tombstone and could be re-provisioned, regaining
+  access. Rotation therefore requires a key-version migration that re-hashes
+  all existing tombstones; never rotate the secret in place.
 
 ## Provider revocation
 

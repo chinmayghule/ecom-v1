@@ -16,6 +16,26 @@ export const DATABASE_POOL_MAX = 5;
 export const DATABASE_ACQUIRE_TIMEOUT_MS = 5_000;
 export const DATABASE_IDLE_TIMEOUT_MS = 10_000;
 
+/**
+ * Tombstone digests are HMACs keyed by TOMBSTONE_SECRET, so the secret is
+ * effectively permanent key material. Weak values are rejected at startup
+ * because rotating or losing them silently re-opens deleted subjects (WR-05).
+ */
+export const MIN_TOMBSTONE_SECRET_LENGTH = 16;
+const WEAK_TOMBSTONE_SECRETS: ReadonlySet<string> = new Set([
+  'changeme',
+  'change-me',
+  'default',
+  'dev',
+  'development',
+  'mysecret',
+  'password',
+  'placeholder',
+  'secret',
+  'test',
+  'test-secret',
+]);
+
 export const REQUIRED_ENV_KEYS = [
   'DATABASE_URL',
   'DIRECT_URL',
@@ -114,6 +134,17 @@ export function validateEnv(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const webOrigins = parseWebOrigins(parsed.CLERK_WEB_ORIGIN);
   if (webOrigins.length === 0 || webOrigins.some((origin) => !isValidWebOrigin(origin))) {
     throw new ConfigurationError(['CLERK_WEB_ORIGIN']);
+  }
+
+  // HMAC key material: reject short or obviously placeholder secrets. A value
+  // that is merely non-empty would let a shipped default silently invalidate
+  // every permanent tombstone if it ever changed (WR-05).
+  const tombstoneSecret = parsed.TOMBSTONE_SECRET.trim();
+  if (
+    tombstoneSecret.length < MIN_TOMBSTONE_SECRET_LENGTH ||
+    WEAK_TOMBSTONE_SECRETS.has(tombstoneSecret.toLowerCase())
+  ) {
+    throw new ConfigurationError(['TOMBSTONE_SECRET']);
   }
 
   const adminEmails = parsed.ADMIN_EMAILS.split(',')
