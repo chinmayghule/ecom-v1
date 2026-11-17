@@ -73,7 +73,7 @@ silently changing any SUS verdict.
 | `prisma` (CLI) | **7.10.1** | https://www.npmjs.com/package/prisma ; official repo https://github.com/prisma/prisma ; official docs https://www.prisma.io/docs/orm/v7 | Approved; **exact pin required** — npm `latest` resolves Prisma 8 RC, never use unpinned [VERIFIED: npm registry; CITED: Prisma official docs] |
 | Nest CLI (`@nestjs/cli`) | pin registry-resolved version exactly | https://www.npmjs.com/package/@nestjs/cli ; https://github.com/nestjs/nest-cli ; https://docs.nestjs.com/cli/overview | Approved — official Nest build/generate tooling [VERIFIED: npm registry; CITED: Nest official docs] |
 | `@nestjs/testing` | 12.x — pin registry-resolved 12.5.0 exactly | https://www.npmjs.com/package/@nestjs/testing ; https://github.com/nestjs/nest ; https://docs.nestjs.com/fundamentals/testing | Approved [VERIFIED: npm registry; CITED: Nest official docs] |
-| `vitest` | 5.1.0 | https://www.npmjs.com/package/vitest ; official repo https://github.com/vitest-dev/vitest ; official docs https://vitest.dev/ | **SUS — owner verification pending** (blocking owner-decision gate; no install permitted) [VERIFIED: npm registry; CITED: official Vitest docs/repo; WARNING: slopcheck flagged as suspicious] — see §3 |
+| `vitest` | 5.1.0 | https://www.npmjs.com/package/vitest ; official repo https://github.com/vitest-dev/vitest ; official docs https://vitest.dev/ | **SUS (historical slopcheck flag retained — typosquat-risk similarity to `vite`); Approved by owner after npmjs/GitHub/official-docs verification** on 2026-11-17 [VERIFIED: npm registry; CITED: official Vitest docs/repo; WARNING: slopcheck flagged as suspicious] — see §3 |
 | `supertest` | 7.3.2 | https://www.npmjs.com/package/supertest ; https://github.com/ladjs/supertest ; https://docs.nestjs.com/fundamentals/testing | Approved [VERIFIED: npm registry; CITED: Nest official testing docs] |
 | `@types/supertest` | pin registry-resolved version exactly | https://www.npmjs.com/package/@types/supertest ; https://github.com/DefinitelyTyped/DefinitelyTyped | Approved — official DefinitelyTyped typings [VERIFIED: npm registry] |
 | `@types/node` | pin registry-resolved version exactly (align to Node 24) | https://www.npmjs.com/package/@types/node ; https://github.com/DefinitelyTyped/DefinitelyTyped | Approved — official DefinitelyTyped typings [VERIFIED: npm registry] |
@@ -92,12 +92,30 @@ silently changing any SUS verdict.
 - Threat register: T-01-02 (spoofing via name similarity) and T-01-SC require
   that the SUS verdict be preserved and that the gate never be auto-approved.
 
-**Current status (Task 1):** `SUS — owner verification pending`. The blocking
-`checkpoint:decision` gate is unresolved in this document; no `vitest` install,
-substitution or lockfile entry is permitted until the owner verdict is recorded
-below.
+**Gate history:** the blocking `checkpoint:decision` gate (T-01-02 / T-01-SC)
+was resolved by an explicit owner reply; it was never auto-approved. No
+`vitest` install, substitution or lockfile entry occurred before the verdict.
+The historical SUS flag and its evidence above are deliberately retained.
 
-**Owner verdict:** _pending — see Task 3._
+**Owner verdict (recorded 2026-11-17):** **Approved by owner after
+npmjs/GitHub/official-docs verification** — `vitest@5.1.0` is approved for
+install as the Phase 1 test runner, pinned to exactly this version. The install
+must stay pinned to 5.1.0 and be re-checked against the registry metadata.
+
+Owner stance: "Vitest is not a new unknown package, but a mature and
+battle-tested one. Verify the source to ensure it's not something with the same
+name but with shady source."
+
+Verification evidence gathered by the orchestrator at the owner's request:
+- `npm view vitest@5.1.0 name version repository.url dist.tarball homepage --json`
+  -> name=vitest, version=5.1.0,
+  repository.url=git+https://github.com/vitest-dev/vitest.git,
+  dist.tarball=https://registry.npmjs.org/vitest/-/vitest-5.1.0.tgz,
+  homepage=https://vitest.dev.
+- https://github.com/vitest-dev/vitest confirms the official Vitest project:
+  17.4k stars, 2.2k forks, 6,446 commits, MIT license, "Next generation testing
+  framework powered by Vite", docs at vitest.dev — a mature, battle-tested
+  project, NOT a lookalike.
 
 ## 4. Explicitly excluded from the Phase 1 inventory
 
