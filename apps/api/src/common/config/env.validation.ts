@@ -1,5 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { IsNotEmpty, IsString, Matches, validateSync } from 'class-validator';
+import { isValidWebOrigin, parseWebOrigins } from '../auth/auth.types';
 
 /**
  * The single typed configuration boundary for the API.
@@ -105,6 +106,14 @@ export function validateEnv(env: NodeJS.ProcessEnv = process.env): AppConfig {
     throw new ConfigurationError(
       invalidKeys.length > 0 ? invalidKeys : [...REQUIRED_ENV_KEYS],
     );
+  }
+
+  // A syntactically non-empty but effectively empty allowlist (e.g. "," or
+  // " , ,") would make the Clerk SDK skip the azp check entirely. Fail startup
+  // instead of silently shipping an unguarded verifier (CR-01).
+  const webOrigins = parseWebOrigins(parsed.CLERK_WEB_ORIGIN);
+  if (webOrigins.length === 0 || webOrigins.some((origin) => !isValidWebOrigin(origin))) {
+    throw new ConfigurationError(['CLERK_WEB_ORIGIN']);
   }
 
   const adminEmails = parsed.ADMIN_EMAILS.split(',')

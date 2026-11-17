@@ -40,6 +40,11 @@ export class ClerkTokenVerifierService implements ClerkTokenVerifier {
     const config = validateEnv();
     this.jwtKey = config.clerkJwtKey;
     this.authorizedParties = parseWebOrigins(config.clerkWebOrigin);
+    // Defence in depth: never hand an empty allowlist to verifyToken(), which
+    // would skip the authorized-party (azp) check entirely (CR-01).
+    if (this.authorizedParties.length === 0) {
+      throw new Error('CLERK_WEB_ORIGIN must contain at least one origin');
+    }
   }
 
   async verify(token: string): Promise<VerifiedClerkIdentity> {
