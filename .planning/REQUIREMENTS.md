@@ -14,7 +14,7 @@
 - [x] **AUTH-03**: User can sign out from the application
 - [x] **AUTH-04**: First sign-in provisions a local application user from the verified Clerk identity (no webhooks)
 - [x] **AUTH-05**: A verified Clerk email matching the admin env-configured list grants the platform-admin role on first sign-in
-- [ ] **AUTH-06**: User can delete their account; personal profile data is anonymized while order records are retained with an anonymized buyer reference
+- [x] **AUTH-06**: User can delete their account; personal profile data is anonymized while order records are retained with an anonymized buyer reference
 
 ### Storefront & Catalogue
 
@@ -139,7 +139,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Complete |
-| AUTH-06 | Phase 1 | Pending |
+| AUTH-06 | Phase 1 | Complete |
 | CATL-01 | Phase 5 | Pending |
 | CATL-02 | Phase 5 | Pending |
 | CATL-03 | Phase 5 | Pending |
