@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-11-17T06:30:36.495Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-11-17T06:37:53.755Z"
 last_activity: 2026-11-17
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 (platform-foundation-identity) — EXECUTING
-Plan: 2 of 9
+Plan: 3 of 9
 Status: Ready to execute
 Last activity: 2026-11-17
 
-Progress: [█░░░░░░░░░] 11%
+Progress: [██░░░░░░░░] 22%
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress: [█░░░░░░░░░] 11%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 3min | 3 tasks | 1 files |
+| Phase 01 P03 | 3min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Recent decisions affecting current work:
 - Roadmap: each backend phase delivers its own tests (unit/integration/API); browser E2E journeys are Phase 7's concern
 - [Phase 01]: pnpm pinned to exactly pnpm@11.5.2 via Corepack 0.36.0; STACK.md 'pnpm 12' discrepancy recorded, not silently resolved — Verified in-environment 2026-11-16/17; a different pnpm major is an owner escalation, never an execution-time change (T-01-04).
 - [Phase 01]: vitest@5.1.0 approved by owner after npmjs/GitHub/official-docs verification (2026-11-17); historical SUS flag retained — Blocking legitimacy gate was never auto-approved; install must stay pinned to 5.1.0 and be re-checked against registry metadata (T-01-02, T-01-SC).
+- [Phase 01]: Owner selected staged-closure (2026-11-17) for merchant-obligation deletion: stop new sales, retain store/merchant/order records, restricted completion/refund only, anonymize when outstanding obligations resolved subject to legal retention; signed-in owner may request closure; exact states/authority/retention delegated to Plans 04/08 — Preserves D-07/D-08/D-09; no legal duration or state name invented
+- [Phase 01]: Owner selected keyed-permanent-tombstone-local-first (2026-11-17): permanent keyed pseudonymous tombstone with no raw PII, local tombstone authoritative in same transaction as anonymization, Clerk revocation after/alongside with retry, fail closed on provider failure — Owner delegated choice as standard industry practice; no legal retention duration invented
 
 ### Pending Todos
 
@@ -87,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-17T06:30:36.471Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-11-17T06:37:53.732Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
