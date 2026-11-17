@@ -30,7 +30,11 @@ RUN pnpm --filter @ecom-v1/api build
 FROM base AS runtime
 ENV NODE_ENV=production
 COPY --from=build /app /app
-RUN pnpm prune --prod
+# Use a production-only install rather than `pnpm prune --prod`: prune drops
+# the workspace .bin links (so `prisma` disappears for the db:deploy CMD).
+# An offline prod install prunes devDependencies AND recreates the bin links.
+# CI=true is required for non-interactive module purging in Docker builds.
+RUN CI=true pnpm install --prod --frozen-lockfile --offline
 USER node
 EXPOSE 3000
 # Migration-before-serving with no sleep: Compose gates DB readiness first.

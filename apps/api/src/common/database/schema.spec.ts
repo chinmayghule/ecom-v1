@@ -122,15 +122,19 @@ async function withClient<T>(work: (client: PgClient) => Promise<T>): Promise<T>
   }
 }
 
-async function expectPgError(work: () => Promise<unknown>, code: string): Promise<void> {
+async function expectPgError(
+  work: () => Promise<unknown>,
+  code: string | readonly string[],
+): Promise<void> {
+  const accepted = typeof code === 'string' ? [code] : code;
   try {
     await work();
   } catch (error: unknown) {
     expect(error).toBeInstanceOf(Error);
-    expect((error as { code?: string }).code).toBe(code);
+    expect(accepted).toContain((error as { code?: string }).code);
     return;
   }
-  throw new Error(`Expected PostgreSQL error with SQLSTATE ${code}`);
+  throw new Error(`Expected PostgreSQL error with SQLSTATE ${accepted.join(' or ')}`);
 }
 
 beforeAll(async () => {
@@ -264,9 +268,18 @@ describe('identity foundation migration on a real PostgreSQL database', () => {
         [userId, storeId],
       );
 
-      // ON DELETE RESTRICT reports SQLSTATE 23001 (restrict_violation).
-      await expectPgError(() => client.query('DELETE FROM users WHERE id = $1', [userId]), '23001');
-      await expectPgError(() => client.query('DELETE FROM stores WHERE id = $1', [storeId]), '23001');
+      // ON DELETE RESTRICT reports SQLSTATE 23001 (restrict_violation) on
+      // PostgreSQL 18+, but 23503 (foreign_key_violation) on PostgreSQL 17 and
+      // earlier. The Compose runtime is postgres:17-alpine, so accept both.
+      const restrictCodes = ['23001', '23503'] as const;
+      await expectPgError(
+        () => client.query('DELETE FROM users WHERE id = $1', [userId]),
+        restrictCodes,
+      );
+      await expectPgError(
+        () => client.query('DELETE FROM stores WHERE id = $1', [storeId]),
+        restrictCodes,
+      );
 
       const stillThere = await client.query<{ count: string }>(
         'SELECT count(*)::text AS count FROM users WHERE id = $1',
