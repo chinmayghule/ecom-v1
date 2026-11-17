@@ -31,8 +31,14 @@ function valueFree(message: string): boolean {
     !message.includes('tombstone-hmac-test-secret') && !message.includes('db.internal');
 }
 
+// Captured at module load, before any test replaces process.env with a minimal
+// fixture. initdb/pg_ctl/psql are resolved via PATH; tests below deliberately
+// swap process.env for env-validation assertions, so child processes must keep
+// the runner's real PATH (GITHUB_PATH on CI) rather than the fixture's.
+const SPAWN_ENV: NodeJS.ProcessEnv = { ...process.env };
+
 function run(command: string, args: readonly string[]): void {
-  const result = spawnSync(command, [...args], { encoding: 'utf8' });
+  const result = spawnSync(command, [...args], { encoding: 'utf8', env: SPAWN_ENV });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(`${command} failed (${result.status}): ${result.stderr ?? ''}${result.stdout ?? ''}`);
