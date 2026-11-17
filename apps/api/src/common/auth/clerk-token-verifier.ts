@@ -79,7 +79,13 @@ export class ClerkTokenVerifierService implements ClerkTokenVerifier {
       throw new ForbiddenException(PROFILE_INCOMPLETE);
     }
 
-    const email = nonEmptyString(claims[CLAIM_PRIMARY_EMAIL]) ?? '';
+    // A missing/blank primary email is a profile contract violation, not an
+    // empty string to provision with or overwrite a stored profile on sign-in
+    // (WR-01). Treat it like a missing display name: 403, fail closed.
+    const email = nonEmptyString(claims[CLAIM_PRIMARY_EMAIL]);
+    if (email === undefined) {
+      throw new ForbiddenException(PROFILE_INCOMPLETE);
+    }
     const emailVerified = claims[CLAIM_EMAIL_VERIFIED] === true;
 
     return Object.freeze<VerifiedClerkIdentity>({
