@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-11-17T06:37:53.755Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-11-17T06:50:08.739Z"
 last_activity: 2026-11-17
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 2
-  percent: 0
+  completed_plans: 3
+  percent: 33
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 (platform-foundation-identity) — EXECUTING
-Plan: 3 of 9
+Plan: 4 of 9
 Status: Ready to execute
 Last activity: 2026-11-17
 
-Progress: [██░░░░░░░░] 22%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [██░░░░░░░░] 22%
 *Updated after each plan completion*
 | Phase 01 P01 | 3min | 3 tasks | 1 files |
 | Phase 01 P03 | 3min | 3 tasks | 3 files |
+| Phase 01 P02 | 6min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,8 @@ Recent decisions affecting current work:
 - [Phase 01]: vitest@5.1.0 approved by owner after npmjs/GitHub/official-docs verification (2026-11-17); historical SUS flag retained — Blocking legitimacy gate was never auto-approved; install must stay pinned to 5.1.0 and be re-checked against registry metadata (T-01-02, T-01-SC).
 - [Phase 01]: Owner selected staged-closure (2026-11-17) for merchant-obligation deletion: stop new sales, retain store/merchant/order records, restricted completion/refund only, anonymize when outstanding obligations resolved subject to legal retention; signed-in owner may request closure; exact states/authority/retention delegated to Plans 04/08 — Preserves D-07/D-08/D-09; no legal duration or state name invented
 - [Phase 01]: Owner selected keyed-permanent-tombstone-local-first (2026-11-17): permanent keyed pseudonymous tombstone with no raw PII, local tombstone authoritative in same transaction as anonymization, Clerk revocation after/alongside with retry, fail closed on provider failure — Owner delegated choice as standard industry practice; no legal retention duration invented
+- [Phase 01]: pnpm pinned to exactly 11.5.2 via Corepack with frozen-lockfile installs and dependency lifecycle scripts disabled (ignoreScripts) — supply-chain safety T-02-02/T-02-05; reproducible clean-clone install
+- [Phase 01]: single Phase 1 test layout with a passing Vitest/Supertest baseline and no separate apps/api/test tree — one shared harness seam for all later backend plans
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-17T06:37:53.732Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-11-17T06:50:08.713Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
