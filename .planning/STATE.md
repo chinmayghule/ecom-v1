@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-11-17T06:50:08.739Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-11-17T07:05:40.273Z"
 last_activity: 2026-11-17
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 3
-  percent: 33
+  completed_plans: 4
+  percent: 44
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 (platform-foundation-identity) — EXECUTING
-Plan: 4 of 9
+Plan: 5 of 9
 Status: Ready to execute
 Last activity: 2026-11-17
 
-Progress: [███░░░░░░░] 33%
+Progress: [████░░░░░░] 44%
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 01 P01 | 3min | 3 tasks | 1 files |
 | Phase 01 P03 | 3min | 3 tasks | 3 files |
 | Phase 01 P02 | 6min | 3 tasks | 14 files |
+| Phase 01 P04 | 13min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ Recent decisions affecting current work:
 - [Phase 01]: Owner selected keyed-permanent-tombstone-local-first (2026-11-17): permanent keyed pseudonymous tombstone with no raw PII, local tombstone authoritative in same transaction as anonymization, Clerk revocation after/alongside with retry, fail closed on provider failure — Owner delegated choice as standard industry practice; no legal retention duration invented
 - [Phase 01]: pnpm pinned to exactly 11.5.2 via Corepack with frozen-lockfile installs and dependency lifecycle scripts disabled (ignoreScripts) — supply-chain safety T-02-02/T-02-05; reproducible clean-clone install
 - [Phase 01]: single Phase 1 test layout with a passing Vitest/Supertest baseline and no separate apps/api/test tree — one shared harness seam for all later backend plans
+- [Phase 01]: Prisma 7.10.1 selected under D-10/D-11 bounded comparison; MikroORM met criteria but had no project-critical advantage, so no alternative ORM installed — Smaller Nest integration surface and conditional-update primitive; no dependency substitution
+- [Phase 01]: CLI auto-discovers prisma7.config.ts in pinned 7.10.1; DIRECT_URL for migrations, pooled DATABASE_URL for runtime; no Prisma 6 directUrl field
+- [Phase 01]: Lifecycle states designed in 01-04: users ACTIVE->CLOSURE_REQUESTED->CLOSURE_ACCEPTED->ANONYMIZED; stores ACTIVE->CLOSURE_REQUESTED->CLOSED; keyed HMAC tombstone only, no raw Clerk subject or invented retention period
 
 ### Pending Todos
 
@@ -93,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-17T06:50:08.713Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-11-17T07:04:59.885Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
