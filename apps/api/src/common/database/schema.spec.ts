@@ -3,8 +3,23 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
-import { Client } from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
+/**
+ * Minimal structural type for the node-postgres surface exercised here.
+ * `@types/pg` is not in the authoritative Phase 1 dependency inventory
+ * (DEPENDENCIES.md), so no extra type-only package is installed.
+ */
+interface PgClient {
+  connect(): Promise<void>;
+  query<T extends Record<string, unknown> = Record<string, unknown>>(
+    text: string,
+    values?: readonly unknown[],
+  ): Promise<{ rows: T[] }>;
+  end(): Promise<void>;
+}
+type PgClientConstructor = new (config: { connectionString: string }) => PgClient;
+const PgClientCtor: PgClientConstructor = (require('pg') as { Client: PgClientConstructor }).Client;
 
 /**
  * Real-PostgreSQL contract tests for the committed foundation migration.
@@ -97,8 +112,8 @@ function provisionLocalCluster(port: number): DisposableCluster {
   };
 }
 
-async function withClient<T>(work: (client: Client) => Promise<T>): Promise<T> {
-  const client = new Client({ connectionString: dbUrl });
+async function withClient<T>(work: (client: PgClient) => Promise<T>): Promise<T> {
+  const client = new PgClientCtor({ connectionString: dbUrl });
   await client.connect();
   try {
     return await work(client);
@@ -227,7 +242,8 @@ describe('identity foundation migration on a real PostgreSQL database', () => {
         'SELECT capability FROM user_capabilities WHERE user_id = $1 ORDER BY capability',
         [userId],
       );
-      expect(capabilities.rows.map((row) => row.capability)).toEqual(['ADMIN', 'MERCHANT']);
+      // PostgreSQL orders enum values by declaration order, not alphabetically.
+      expect(capabilities.rows.map((row) => row.capability).sort()).toEqual(['ADMIN', 'MERCHANT']);
     });
   });
 
@@ -248,8 +264,9 @@ describe('identity foundation migration on a real PostgreSQL database', () => {
         [userId, storeId],
       );
 
-      await expectPgError(() => client.query('DELETE FROM users WHERE id = $1', [userId]), '23503');
-      await expectPgError(() => client.query('DELETE FROM stores WHERE id = $1', [storeId]), '23503');
+      // ON DELETE RESTRICT reports SQLSTATE 23001 (restrict_violation).
+      await expectPgError(() => client.query('DELETE FROM users WHERE id = $1', [userId]), '23001');
+      await expectPgError(() => client.query('DELETE FROM stores WHERE id = $1', [storeId]), '23001');
 
       const stillThere = await client.query<{ count: string }>(
         'SELECT count(*)::text AS count FROM users WHERE id = $1',
