@@ -8,6 +8,11 @@ import { PrismaService } from '../common/database/prisma.service';
  * the Clerk external subject with a server-side secret. No raw Clerk subject,
  * email or other PII is ever stored in the tombstone table. Plan 08 writes the
  * same digest in the same transaction as anonymization.
+ *
+ * TOMBSTONE_SECRET is immutable key material: validateEnv() rejects weak values,
+ * but rotating or losing it makes every stored digest stop matching, which
+ * would re-open deleted subjects. Rotation requires a key-version migration
+ * that re-hashes all existing tombstones (see docs/identity/account-deletion.md).
  */
 export function subjectDigestFor(clerkSubject: string, tombstoneSecret: string): string {
   return createHmac('sha256', tombstoneSecret).update(clerkSubject, 'utf8').digest('hex');

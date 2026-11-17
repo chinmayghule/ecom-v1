@@ -125,8 +125,14 @@ describe('typed environment validation', () => {
     }
   });
 
-  it('fails safely when a required secret is blank or a URL is malformed', () => {
+  it('fails safely when a required secret is blank, weak or a URL is malformed', () => {
     expect(() => validateEnv({ ...VALID_ENV, TOMBSTONE_SECRET: '' })).toThrow(ConfigurationError);
+    expect(() => validateEnv({ ...VALID_ENV, TOMBSTONE_SECRET: 'short' })).toThrow(
+      ConfigurationError,
+    );
+    expect(() => validateEnv({ ...VALID_ENV, TOMBSTONE_SECRET: 'changeme' })).toThrow(
+      ConfigurationError,
+    );
     expect(() => validateEnv({ ...VALID_ENV, DATABASE_URL: 'not-a-url' })).toThrow(ConfigurationError);
   });
 
