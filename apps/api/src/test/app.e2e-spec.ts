@@ -2,6 +2,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../app.module';
+import { PrismaService } from '../common/database/prisma.service';
 
 /**
  * Baseline API harness. Each test owns its Nest application and closes it, so
@@ -16,9 +17,20 @@ describe('API application harness (e2e)', () => {
   });
 
   it('initializes and closes the Nest application without open handles', async () => {
+    // The harness proves wiring, not persistence; a stub keeps the single
+    // PrismaService from opening a real connection during baseline init.
+    const prismaStub = {
+      onModuleInit: async (): Promise<void> => undefined,
+      onModuleDestroy: async (): Promise<void> => undefined,
+      $queryRaw: async (): Promise<Array<{ ok: boolean }>> => [{ ok: true }],
+    } as unknown as PrismaService;
+
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue(prismaStub)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();

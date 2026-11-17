@@ -10,6 +10,15 @@ import { afterEach, beforeEach } from 'vitest';
 const TEST_ENV_DEFAULTS: Readonly<Record<string, string>> = Object.freeze({
   NODE_ENV: 'test',
   TZ: 'UTC',
+  // Non-secret placeholders so a Nest app importing PrismaModule can compile in
+  // the baseline harness without a live database or real Clerk credentials.
+  DATABASE_URL: 'postgresql://test@127.0.0.1:5432/ecom_test',
+  DIRECT_URL: 'postgresql://test@127.0.0.1:5432/ecom_test',
+  CLERK_SECRET_KEY: 'sk_test_placeholder',
+  CLERK_JWT_KEY: 'jwt_test_placeholder',
+  CLERK_WEB_ORIGIN: 'http://localhost:3000',
+  ADMIN_EMAILS: 'owner@example.test',
+  TOMBSTONE_SECRET: 'tombstone-test-placeholder',
 });
 
 const originalEnv: Record<string, string | undefined> = {};

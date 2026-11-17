@@ -11,6 +11,7 @@ export const API_ERROR_CODES = {
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
   CONFLICT: 'CONFLICT',
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
   HTTP_ERROR: 'HTTP_ERROR',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const;
@@ -40,6 +41,7 @@ export const API_ERROR_MESSAGES: Readonly<Record<ApiErrorCode, string>> = Object
   FORBIDDEN: 'You are not permitted to perform this action.',
   NOT_FOUND: 'The requested resource was not found.',
   CONFLICT: 'The request conflicts with the current state.',
+  SERVICE_UNAVAILABLE: 'A required dependency is temporarily unavailable.',
   HTTP_ERROR: 'The request could not be completed.',
   INTERNAL_ERROR: 'An unexpected error occurred.',
 } as const);

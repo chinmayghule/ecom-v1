@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   HttpException,
   NotFoundException,
+  ServiceUnavailableException,
   UnauthorizedException,
   type ExceptionFilter,
 } from '@nestjs/common';
@@ -122,6 +123,9 @@ function mapException(exception: unknown): MappedError {
   }
   if (exception instanceof ConflictException) {
     return { statusCode: 409, code: API_ERROR_CODES.CONFLICT };
+  }
+  if (exception instanceof ServiceUnavailableException) {
+    return { statusCode: 503, code: API_ERROR_CODES.SERVICE_UNAVAILABLE };
   }
   if (exception instanceof HttpException) {
     return { statusCode: exception.getStatus(), code: API_ERROR_CODES.HTTP_ERROR };
