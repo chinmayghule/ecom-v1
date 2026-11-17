@@ -29,6 +29,8 @@ export NODE_ENV=test
 export CLERK_SECRET_KEY=sk_test_placeholder
 export CLERK_JWT_KEY=jwt_test_placeholder
 export CLERK_WEB_ORIGIN=http://localhost:3000
+export CLERK_ISSUER=https://clerk.example.test
+export CLERK_AUDIENCE=clerk.example.test
 export ADMIN_EMAILS=owner@example.test
 export TOMBSTONE_SECRET=local_verify_tombstone_secret
 

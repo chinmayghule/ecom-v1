@@ -21,8 +21,13 @@ are Phase 5's UI deliverable (see `Phase 5 handoff`).
 - The sign-up UI itself is Clerk-hosted/configured in Phase 1; no application
   credential endpoint is implemented.
 - Required environment: `CLERK_JWT_KEY` (instance JWT public key, used by the
-  networkless verifier) and `CLERK_WEB_ORIGIN` (approved web origin(s)). Values
-  are supplied through the environment, never committed to this document.
+  networkless verifier), `CLERK_WEB_ORIGIN` (approved web origin(s)),
+  `CLERK_ISSUER` (expected `iss` claim, an http(s) URL) and `CLERK_AUDIENCE`
+  (expected `aud` claim, the instance identifier). Values are supplied through
+  the environment, never committed to this document. The verifier passes the
+  issuer and audience to `@clerk/backend` `verifyToken()` so both claims are
+  checked on every request — without them the SDK skips those assertions and
+  the fail-closed posture is weaker than documented.
 
 ## Session persistence
 
@@ -125,7 +130,10 @@ recorded as an automated pass and no repository CLI can assert dashboard state.
 4. Sign in to the live instance and copy a fresh test session token. Decode its
    payload locally (for example with a base64 decode of the JWT payload segment)
    and confirm it carries those three signed claims with the expected types.
-   Do not paste the token into source control, logs or this document.
+   Confirm its `iss` and `aud` claims exactly match `CLERK_ISSUER` and
+   `CLERK_AUDIENCE`, and that `azp` is in `CLERK_WEB_ORIGIN` — a mismatch fails
+   closed with 401. Do not paste the token into source control, logs or this
+   document.
 5. Send `GET /users/me` to the API with `Authorization: Bearer <token>` and
    confirm the response is the local profile with server-derived capabilities
    and no Clerk subject or internal fields.

@@ -38,9 +38,12 @@ correctly once the gate has run that step.
 - `.env` / `.env.*` — gitignored local overrides. Create one only if you need to
   change a local value; keep real Clerk keys out of git.
 - Compose injects non-secret defaults for `CLERK_SECRET_KEY`, `CLERK_JWT_KEY`,
-  `CLERK_WEB_ORIGIN`, `ADMIN_EMAILS` and `TOMBSTONE_SECRET`. All are local
-  placeholders. Real Clerk credentials are only needed for the manual live
-  instance check and the Phase 5 browser journeys, never for the test suite.
+  `CLERK_WEB_ORIGIN`, `CLERK_ISSUER`, `CLERK_AUDIENCE`, `ADMIN_EMAILS` and
+  `TOMBSTONE_SECRET`. All are local placeholders. Real Clerk credentials are
+  only needed for the manual live instance check and the Phase 5 browser
+  journeys, never for the test suite. `CLERK_ISSUER` and `CLERK_AUDIENCE` pin
+  the token `iss`/`aud` claims; point them at the live instance's values when
+  moving beyond local placeholders.
 
 Required env names are validated at boot by `apps/api/src/common/config/env.validation.ts`.
 

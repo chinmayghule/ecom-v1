@@ -140,6 +140,8 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
     process.env['CLERK_SECRET_KEY'] = 'sk_test_placeholder';
     process.env['CLERK_JWT_KEY'] = 'jwt_test_placeholder';
     process.env['CLERK_WEB_ORIGIN'] = 'http://localhost:3000';
+    process.env['CLERK_ISSUER'] = 'https://clerk.example.test';
+    process.env['CLERK_AUDIENCE'] = 'clerk.example.test';
     process.env['ADMIN_EMAILS'] = 'owner@example.test';
     process.env['TOMBSTONE_SECRET'] = TOMBSTONE_SECRET;
 

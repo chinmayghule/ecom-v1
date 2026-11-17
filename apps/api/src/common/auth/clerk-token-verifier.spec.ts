@@ -11,6 +11,8 @@ import { ClerkTokenVerifierService } from './clerk-token-verifier';
  */
 const WEB_ORIGIN = 'http://localhost:3000';
 const OTHER_ORIGIN = 'http://localhost:3001';
+const ISSUER = 'https://clerk.example.test';
+const AUDIENCE = 'clerk.example.test';
 const SESSION_CATEGORY = 'cl_B7d4PD111AAA';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
@@ -39,6 +41,8 @@ function signedToken(
   const body = encodeJson({
     sub: 'user_test_subject',
     azp: WEB_ORIGIN,
+    iss: ISSUER,
+    aud: AUDIENCE,
     iat: now - 10,
     nbf: now - 10,
     exp: now + 600,
@@ -59,6 +63,8 @@ describe('ClerkTokenVerifierService (networkless signed claims)', () => {
   beforeEach(() => {
     process.env['CLERK_JWT_KEY'] = jwtKey;
     process.env['CLERK_WEB_ORIGIN'] = WEB_ORIGIN;
+    process.env['CLERK_ISSUER'] = ISSUER;
+    process.env['CLERK_AUDIENCE'] = AUDIENCE;
     verifier = new ClerkTokenVerifierService();
   });
 
@@ -80,7 +86,7 @@ describe('ClerkTokenVerifierService (networkless signed claims)', () => {
     expect(typeof identity.emailVerified).toBe('boolean');
   });
 
-  it('fails closed with a sanitized 401 for missing, expired, wrong-signature or wrong-party tokens', async () => {
+  it('fails closed with a sanitized 401 for missing, expired, wrong-signature, wrong-party, wrong-issuer or wrong-audience tokens', async () => {
     const now = Math.floor(Date.now() / 1000);
     const cases: ReadonlyArray<readonly [string, string]> = [
       ['empty token', ''],
@@ -88,6 +94,8 @@ describe('ClerkTokenVerifierService (networkless signed claims)', () => {
       ['expired token', signedToken({ exp: now - 60 })],
       ['wrong signature', signedToken({}, { signingKey: otherPrivateKey })],
       ['wrong authorized party', signedToken({ azp: OTHER_ORIGIN })],
+      ['wrong issuer', signedToken({ iss: 'https://evil.example.test' })],
+      ['wrong audience', signedToken({ aud: 'evil.example.test' })],
       ['missing subject', signedToken({ sub: undefined })],
       ['non-string subject', signedToken({ sub: 42 })],
     ];

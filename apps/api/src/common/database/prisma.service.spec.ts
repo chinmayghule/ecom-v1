@@ -20,6 +20,8 @@ const VALID_ENV: NodeJS.ProcessEnv = {
   CLERK_SECRET_KEY: 'sk_test_runtime_only',
   CLERK_JWT_KEY: 'jwt_test_key',
   CLERK_WEB_ORIGIN: 'http://localhost:3000',
+  CLERK_ISSUER: 'https://clerk.example.test',
+  CLERK_AUDIENCE: 'clerk.example.test',
   ADMIN_EMAILS: 'Owner@Example.test, second@example.test ',
   TOMBSTONE_SECRET: 'tombstone-hmac-test-secret',
 };

@@ -21,6 +21,8 @@ env:
   CLERK_SECRET_KEY: sk_test_ci_placeholder
   CLERK_JWT_KEY: jwt_test_ci_placeholder
   CLERK_WEB_ORIGIN: http://localhost:3000
+  CLERK_ISSUER: https://clerk.example.test
+  CLERK_AUDIENCE: clerk.example.test
   ADMIN_EMAILS: owner@example.test
   TOMBSTONE_SECRET: ci_tombstone_secret_placeholder
   DATABASE_URL: postgresql://ecom_ci:ecom_ci_local@127.0.0.1:5432/ecom_ci_test
