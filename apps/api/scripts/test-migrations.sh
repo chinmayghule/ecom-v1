@@ -100,6 +100,10 @@ TABLES="$(count_tables)"
 echo "    re-applied cleanly ($TABLES tables)"
 
 echo "==> Constraint suite against the migrated database"
-TEST_DATABASE_URL="$DB_URL" pnpm test -- src/common/database/schema.spec.ts
+# Target the single migration-contract spec with vitest directly. The Vite+
+# `pnpm test -- <path>` wrapper does not filter files and would launch every
+# suite in parallel against this shared disposable database, letting the
+# real-DB e2e TRUNCATE fixtures clobber one another (a 01-09 gate blocker).
+TEST_DATABASE_URL="$DB_URL" ./node_modules/.bin/vitest run src/common/database/schema.spec.ts
 
 echo "==> Migration verification PASSED"
