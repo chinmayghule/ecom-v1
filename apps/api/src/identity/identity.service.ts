@@ -75,12 +75,16 @@ export class IdentityService implements IdentityResolver {
 
     const existing = await this.repository.findByClerkSubject(identity.clerkUserId);
     if (existing !== undefined) {
-      if (existing.lifecycleStatus !== 'ACTIVE') {
+      // Staged closure (owner resolution) keeps CLOSURE_REQUESTED /
+      // CLOSURE_ACCEPTED merchants able to sign in for restricted completion
+      // and refund work. Only a finalized (ANONYMIZED) identity is denied
+      // locally; the keyed tombstone above denies deleted subjects first.
+      if (existing.lifecycleStatus === 'ANONYMIZED') {
         throw new UnauthorizedException(AUTHENTICATION_FAILED);
       }
       await this.repository.refreshProfile(existing.id, identity.email, identity.displayName);
       const refreshed = await this.repository.findByClerkSubject(identity.clerkUserId);
-      if (refreshed === undefined || refreshed.lifecycleStatus !== 'ACTIVE') {
+      if (refreshed === undefined || refreshed.lifecycleStatus === 'ANONYMIZED') {
         throw new UnauthorizedException(AUTHENTICATION_FAILED);
       }
       return { user: toAuthenticatedUser(refreshed), created: false };
@@ -105,7 +109,7 @@ export class IdentityService implements IdentityResolver {
       // Another concurrent first request won the insert race; read the one
       // durable local user instead of failing closed on a benign conflict.
       const raced = await this.repository.findByClerkSubject(identity.clerkUserId);
-      if (raced === undefined || raced.lifecycleStatus !== 'ACTIVE') {
+      if (raced === undefined || raced.lifecycleStatus === 'ANONYMIZED') {
         throw new UnauthorizedException(AUTHENTICATION_FAILED);
       }
       return { user: toAuthenticatedUser(raced), created: false };
