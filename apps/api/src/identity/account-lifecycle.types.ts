@@ -54,7 +54,16 @@ export interface ProviderRevocationResult {
  */
 export const PROVIDER_REVOCATION = Symbol('ProviderRevocation');
 export interface ProviderRevocation {
-  revoke(clerkSubject: string, subjectDigest: string): Promise<ProviderRevocationResult>;
+  /**
+   * `userId` is the stable, non-PII local id used to attribute the post-commit
+   * provider-outcome audit event; `subjectDigest` keys the tombstone. The raw
+   * Clerk subject is used only for the provider call and is never persisted.
+   */
+  revoke(
+    userId: string,
+    clerkSubject: string,
+    subjectDigest: string,
+  ): Promise<ProviderRevocationResult>;
 }
 
 /** Config slice this module owns. */

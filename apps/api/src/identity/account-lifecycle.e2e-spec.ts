@@ -99,6 +99,7 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
   let prisma: PrismaService;
   let disposable: DisposableCluster | undefined;
   let recordProviderOutcome: (
+    userId: string,
     digest: string,
     outcome: 'REVOKED' | 'FAILED',
     attempts: number,
@@ -164,12 +165,12 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
       .useValue(verifier)
       .overrideProvider(PROVIDER_REVOCATION)
       .useValue({
-        revoke: vi.fn(async (_subject: string, digest: string) => {
+        revoke: vi.fn(async (userId: string, _subject: string, digest: string) => {
           if (providerBehavior === 'FAIL') {
-            await recordProviderOutcome(digest, 'FAILED', 3, 'PROVIDER_AUTH_CONFIG');
+            await recordProviderOutcome(userId, digest, 'FAILED', 3, 'PROVIDER_AUTH_CONFIG');
             return { outcome: 'FAILED', attempts: 3, errorCode: 'PROVIDER_AUTH_CONFIG' };
           }
-          await recordProviderOutcome(digest, 'REVOKED', 1, null);
+          await recordProviderOutcome(userId, digest, 'REVOKED', 1, null);
           return { outcome: 'REVOKED', attempts: 1, errorCode: null };
         }),
       })

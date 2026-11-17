@@ -163,6 +163,13 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
 
     expect(result).toEqual({ code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' });
     expect(revoker.revoke).toHaveBeenCalledTimes(1);
+    // The stable local id is threaded through for audit-event attribution;
+    // the raw Clerk subject is passed only for the provider call.
+    expect(revoker.revoke).toHaveBeenCalledWith(
+      'user-1',
+      'sub_alice',
+      subjectDigestFor('sub_alice', SECRET),
+    );
   });
 
   it('conflicts on a tombstone conflict when local anonymization cannot be confirmed', async () => {

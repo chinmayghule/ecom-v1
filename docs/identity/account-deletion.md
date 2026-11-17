@@ -133,6 +133,13 @@ Fail-closed behavior:
 - A provider failure never rolls back or reverses the committed anonymization
   and never restores local access. The person remains locked out locally.
 
+Each provider-outcome event is appended with the stable, non-PII `user_id`, so
+it can be joined to the account and tombstone for a per-account audit trail. No
+raw Clerk subject and no subject digest is written into the append-only event
+log; only the error class (when failed) is kept in `detail`. This uses the
+existing nullable `user_id` column and a plain INSERT, so it does not alter the
+append-only `lifecycle_events` table or require a migration.
+
 ## Restricted merchant actions
 
 When a user with merchant/store/order obligations requests closure:

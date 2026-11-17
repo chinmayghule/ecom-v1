@@ -56,7 +56,11 @@ export class ClerkAccountRevocationService implements ProviderRevocation {
     this.client = (factory ?? defaultFactory)({ secretKey: this.secretKey });
   }
 
-  async revoke(clerkSubject: string, subjectDigest: string): Promise<ProviderRevocationResult> {
+  async revoke(
+    userId: string,
+    clerkSubject: string,
+    subjectDigest: string,
+  ): Promise<ProviderRevocationResult> {
     let lastErrorCode: string | null = null;
 
     for (let attempt = 1; attempt <= MAX_REVOCATION_ATTEMPTS; attempt += 1) {
@@ -68,13 +72,13 @@ export class ClerkAccountRevocationService implements ProviderRevocation {
         lastErrorCode = classifyProviderError(error);
       }
       if (revoked) {
-        await this.record(subjectDigest, 'REVOKED', attempt, null);
+        await this.record(userId, subjectDigest, 'REVOKED', attempt, null);
         return { outcome: 'REVOKED', attempts: attempt, errorCode: null };
       }
     }
 
     // Exhausted: fail closed. Local denial remains; only bookkeeping changes.
-    await this.record(subjectDigest, 'FAILED', MAX_REVOCATION_ATTEMPTS, lastErrorCode);
+    await this.record(userId, subjectDigest, 'FAILED', MAX_REVOCATION_ATTEMPTS, lastErrorCode);
     return {
       outcome: 'FAILED',
       attempts: MAX_REVOCATION_ATTEMPTS,
@@ -83,11 +87,12 @@ export class ClerkAccountRevocationService implements ProviderRevocation {
   }
 
   private async record(
+    userId: string,
     subjectDigest: string,
     outcome: TombstoneRevocationOutcome,
     attempts: number,
     errorCode: string | null,
   ): Promise<void> {
-    await this.repository.recordProviderOutcome(subjectDigest, outcome, attempts, errorCode);
+    await this.repository.recordProviderOutcome(userId, subjectDigest, outcome, attempts, errorCode);
   }
 }
