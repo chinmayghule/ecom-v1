@@ -64,6 +64,7 @@ Progress: [██████████] 100%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- [Owner workflow preference, 2026-11-17]: Do **not** create/run per-phase UAT during Stage 1 implementation. Generate the UAT file for each phase only after implementation of all Stage 1 phases is complete; the owner will then test them all in one dedicated session. A verify-work invocation before that trigger should be stopped, not executed. Existing `01-HUMAN-UAT.md` stays as the human-only record and is not resumed in the meantime.
 - Roadmap: mandated subsystem sequencing (backend → frontend → integration → deployment), 8 phases; OpenAPI contract freeze at end of Phase 4 is the backend→frontend handoff gate
 - Roadmap: user-journey requirements map to the phase delivering the majority of their substance (backend rules → backend phase; presentation → frontend phase); backend criteria verify via API/integration harness
 - Roadmap: each backend phase delivers its own tests (unit/integration/API); browser E2E journeys are Phase 7's concern
