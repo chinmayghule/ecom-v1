@@ -89,7 +89,7 @@
 - [ ] **OPS-02**: API contract is OpenAPI (single source of truth); the frontend consumes a generated API client
 - [ ] **OPS-03**: Pino structured application logging and health endpoints provide useful local/demo operational visibility
 - [ ] **OPS-04**: Automated tests cover important business rules, API behaviour and end-to-end journeys (Vitest, Supertest, React Testing Library, Playwright)
-- [ ] **OPS-05**: Local development uses Docker/Docker Compose; a repeatable CI/CD pipeline runs on GitHub Actions (free-tier safe)
+- [x] **OPS-05**: Local development uses Docker/Docker Compose; a repeatable CI/CD pipeline runs on GitHub Actions (free-tier safe)
 - [ ] **OPS-06**: Frontend (Vercel, provider hostname) and backend are deployed with persistent PostgreSQL under the zero-spend constraint, with a local/demo fallback
 - [ ] **OPS-07**: Seed/demo data (including the ~200-image gallery seed, GALL-05) and a reviewer-friendly walkthrough of the important application journeys exist
 - [ ] **OPS-08**: A Starlight documentation site covers setup, architecture, API behaviour and key decisions
@@ -190,7 +190,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-02 | Phase 4 | Pending |
 | OPS-03 | Phase 1 | Pending |
 | OPS-04 | Phase 7 | Pending |
-| OPS-05 | Phase 1 | Pending |
+| OPS-05 | Phase 1 | Complete |
 | OPS-06 | Phase 8 | Pending |
 | OPS-07 | Phase 8 | Pending |
 | OPS-08 | Phase 8 | Pending |

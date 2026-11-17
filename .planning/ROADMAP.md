@@ -38,7 +38,7 @@ This roadmap delivers Stage 1 of the marketplace-lite e-commerce application: a 
 **Plans**: 9 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Verify the SUS Vitest dependency before any install
+- [x] 01-01-PLAN.md — Verify the SUS Vitest dependency before any install
 - [ ] 01-02-PLAN.md — Create the pinned pnpm/Vite+ workspace, NestJS API, and test harness
 - [ ] 01-03-PLAN.md — Resolve account-deletion, merchant-closure, tombstone, and Clerk-revocation policy
 - [ ] 01-04-PLAN.md — Establish the Prisma schema, migration, and database runtime foundation
@@ -50,9 +50,12 @@ Plans:
 
 Notes:
 - Toolchain decision: pnpm workspaces + Node pinned via `.nvmrc` + `engines` + Corepack `packageManager`; Docker images pin the same Node version (see PROJECT.md Key Decisions). Verify exact Node version against NestJS 12's ≥22.12 requirement at planning; pin exact package versions per STACK.md (Prisma 7.10.1, TS 6.x, @hey-api/openapi-ts 0.99.0).
+- Package-manager pin (verified in this environment on 2026-11-16): `packageManager` = `pnpm@11.5.2`, provisioned by Corepack 0.36.0. `research/STACK.md`'s "pnpm 12 workspaces" line is research-level prose, not an owner-locked version — PROJECT.md locks only "pnpm workspaces + Corepack `packageManager`". A different pnpm major is an owner change and is escalated at execution time, never adopted silently.
+- Per-phase validation contract: `.planning/phases/01-platform-foundation-identity/01-VALIDATION.md` (framework, sampling rate, per-task verify map, Wave 0 gaps, manual-only checks).
 - Backend phases verify Clerk-facing criteria through the API integration harness (Clerk test sessions); the web app wires the Clerk UI in Phase 5.
 - **Journey modelling (mandated):** this phase documents the customer, merchant and admin journeys and maps them to planned API endpoints, so all later contracts serve their real consumers. The highest-risk phase-specific research areas per SUMMARY.md: Clerk×NestJS guard design (no official SDK — re-verify at planning), Prisma 7.10.1 pinning + pooled/direct URL setup, TS 6.x pin.
-- Gallery seed data design starts here only as schema capacity; the gallery module itself is Phase 2.
+- Gallery seed data design starts here only as schema capacity; the gallery module itself is Phase 2. Phase 1 scope for this item is exactly one foundation table (`gallery_assets`) able to hold the later ~200 curated free-stock image records with source URL, name, category, tags, and a soft-deactivation marker (Plan 01-04), plus a scope statement in the journey contract (Plan 01-09). No gallery module, gallery API, admin gallery CRUD, ~200-image seed pipeline, merchant picker, or product-image behaviour is built in Phase 1.
+- Clerk-facing criteria are proven through the API integration harness and the documented Clerk configuration contract. Browser sign-up/sign-in/session-persistence/sign-out are **not** browser-verified in Phase 1 — the browser UI is Phase 5 — and are recorded as manual-only checks in `01-VALIDATION.md`.
 
 ### Phase 2: Gallery, Stores & Catalogue
 **Goal**: The supply side works at the API level: the admin-curated image gallery exists and is seeded, merchants self-onboard and manage their own catalogue and inventory from it with server-enforced ownership, categories are admin-governed, and the public catalogue is queryable
@@ -174,7 +177,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (∥ 6) → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Identity | 0/9 | Planned    |  |
+| 1. Platform Foundation & Identity | 1/9 | In Progress|  |
 | 2. Gallery, Stores & Catalogue | 0/TBD | Not started | - |
 | 3. Cart, Checkout, Payments & Orders | 0/TBD | Not started | - |
 | 4. Admin Backend & Contract Freeze | 0/TBD | Not started | - |
