@@ -78,12 +78,16 @@ discover → plan → execute → verify → land (commit / PR) → record
 ### Wave commits
 
 A wave is a meaningful boundary inside a phase. Commit at the end of **every**
-wave, after the wave's build/test gate and tracking update, with a Conventional
-Commits message such as `chore(phase-01): complete wave 2` (see `GIT_CONVENTIONS.md`).
-This makes progress traceable and keeps each wave's changes atomic. The commit
-carries the wave's outstanding project changes; when nothing changed since the
-previous commit, an empty marker commit is used so the boundary stays visible in
-history.
+wave, after the wave's build/test gate and tracking update, so progress stays
+traceable. A wave commit obeys the same rules as any other commit: one logical
+change, a Conventional Commits type matching the actual change, and a scope only
+when the change is confined to a real package or module (see `GIT_CONVENTIONS.md`).
+Do not bundle unrelated work under `chore` or invent a scope for a phase — for
+cross-cutting phase bookkeeping use a scope-less message such as
+`docs: record wave 2 boundary`. When nothing changed since the previous commit,
+record the boundary in the phase's tracking files instead of adding an empty
+commit. The "before every commit" checks in `GIT_WORKFLOW.md` still apply to every
+commit that is made.
 
 ## Decision authority
 
