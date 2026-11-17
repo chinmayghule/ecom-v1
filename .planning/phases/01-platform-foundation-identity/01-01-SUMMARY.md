@@ -73,7 +73,7 @@ Each task was committed atomically:
 2. **Task 2: Owner verdict on the SUS Vitest package before installation** - `fd6601c` (docs — gate-clearance record; Task 2 has `<files>None</files>`, so an empty commit was used to keep an auditable, individually attributed gate record)
 3. **Task 3: Record the owner verdict without changing its meaning** - `fdb86f7` (docs)
 
-**Plan metadata:** `PENDING_FINAL_COMMIT` (docs: complete plan)
+**Plan metadata:** `c44109a` (docs: complete plan — STATE/ROADMAP/REQUIREMENTS updates)
 
 ## Files Created/Modified
 
