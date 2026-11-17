@@ -1,2 +1,12 @@
 packages:
   - 'apps/api'
+
+# Plan 01-01's supply-chain audit found no postinstall scripts in the reviewed
+# set. Keep dependency lifecycle scripts globally disabled so no arbitrary (or
+# remote-fetching) install script runs — threat T-02-02 — and so a
+# frozen-lockfile install stays deterministic on a clean clone.
+ignoreScripts: true
+allowBuilds:
+  '@prisma/engines': set this to true or false
+  '@scarf/scarf': set this to true or false
+  prisma: set this to true or false
