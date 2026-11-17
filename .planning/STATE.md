@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-05-PLAN.md
-last_updated: "2026-11-17T07:21:34.865Z"
+stopped_at: Completed 01-06-PLAN.md
+last_updated: "2026-11-17T07:40:09.128Z"
 last_activity: 2026-11-17
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 5
-  percent: 56
+  completed_plans: 6
+  percent: 67
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 (platform-foundation-identity) — EXECUTING
-Plan: 6 of 9
+Plan: 7 of 9
 Status: Ready to execute
 Last activity: 2026-11-17
 
-Progress: [██████░░░░] 56%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [██████░░░░] 56%
 | Phase 01 P02 | 6min | 3 tasks | 14 files |
 | Phase 01 P04 | 13min | 2 tasks | 10 files |
 | Phase 01 P05 | 10min | 3 tasks | 25 files |
+| Phase 01 P06 | 9min | 3 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 01]: apps/api/src/openapi.ts is the sole code-first OpenAPI assembler; Plan 07 extends it rather than adding a second document source — OpenAPI is the single contract source
 - [Phase 01]: Readiness runs a bounded real Prisma query and fails closed with non-2xx SERVICE_UNAVAILABLE on rejection, timeout or malformed result; liveness stays process-only — Truthful dependency state without leaking connection details
 - [Phase 01]: Pinned prisma CLI 7.10.1 is a runtime dependency so the container applies migrations via the single db:deploy entrypoint after dev deps are pruned — Migration-before-serving with one shared entrypoint and no second command
+- [Phase 01]: Clerk verification uses the official @clerk/backend verifyToken with a networkless PEM key and explicit authorized parties; bearer-only transport, 401 auth failure vs 403 incomplete profile — No official NestJS Clerk SDK; claims must be networkless and authorized-party checked
+- [Phase 01]: Race-safe local provisioning on unique Clerk subject; admin granted only on first create from a verified allowlisted email and never on later profile refresh — D-02/D-04: immutable external key and explicit capability changes only
+- [Phase 01]: Global guard denies by default, bypasses only explicit IS_PUBLIC routes, and denies keyed-tombstoned subjects before any profile is read — D-06 and owner tombstone resolution: local state is authoritative
 
 ### Pending Todos
 
@@ -103,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-17T07:21:32.681Z
-Stopped at: Completed 01-05-PLAN.md
+Last session: 2026-11-17T07:40:09.096Z
+Stopped at: Completed 01-06-PLAN.md
 Resume file: None

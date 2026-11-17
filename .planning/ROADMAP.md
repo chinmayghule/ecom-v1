@@ -43,7 +43,7 @@ Plans:
 - [x] 01-03-PLAN.md — Resolve account-deletion, merchant-closure, tombstone, and Clerk-revocation policy
 - [x] 01-04-PLAN.md — Establish the Prisma schema, migration, and database runtime foundation
 - [x] 01-05-PLAN.md — Add global validation, Pino logging, health probes, and Docker Compose
-- [ ] 01-06-PLAN.md — Verify Clerk sessions and provision race-safe local users with capabilities
+- [x] 01-06-PLAN.md — Verify Clerk sessions and provision race-safe local users with capabilities
 - [ ] 01-07-PLAN.md — Enforce capabilities/ownership and define the Clerk profile/session contract
 - [ ] 01-08-PLAN.md — Implement owner-approved account deletion, merchant closure, and provider revocation
 - [ ] 01-09-PLAN.md — Add CI, phase acceptance tests, journey contracts, and clean-snapshot verification
@@ -177,7 +177,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (∥ 6) → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Identity | 5/9 | In Progress|  |
+| 1. Platform Foundation & Identity | 6/9 | In Progress|  |
 | 2. Gallery, Stores & Catalogue | 0/TBD | Not started | - |
 | 3. Cart, Checkout, Payments & Orders | 0/TBD | Not started | - |
 | 4. Admin Backend & Contract Freeze | 0/TBD | Not started | - |
