@@ -84,7 +84,7 @@ export class AccountLifecycleService {
 
     // Local commit is done and authoritative. Provider revocation follows and
     // is fail-closed: its failure cannot roll back or re-enable the account.
-    const provider = await this.revoker.revoke(user.clerkUserId, subjectDigest);
+    const provider = await this.revoker.revoke(user.id, user.clerkUserId, subjectDigest);
     return provider.outcome === 'REVOKED'
       ? { code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' }
       : { code: 'PROVIDER_REVOCATION_FAILED', lifecycleStatus: 'ANONYMIZED' };

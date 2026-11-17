@@ -147,8 +147,16 @@ export class AccountLifecycleRepository {
    * Records the provider outcome after the local commit. A provider failure
    * only updates the tombstone's bookkeeping and appends an audit event — it
    * never restores local access or reverses anonymization (fail closed).
+   *
+   * The appended event is attributed with the stable, non-PII `userId` so it
+   * can be joined to the account/tombstone without storing the raw Clerk
+   * subject or the subject digest in the append-only event log. The event is a
+   * new INSERT (the table's append-only trigger rejects UPDATE/DELETE), so no
+   * schema change or migration is needed: `user_id` already exists and is
+   * nullable.
    */
   async recordProviderOutcome(
+    userId: string,
     subjectDigest: string,
     outcome: TombstoneRevocationOutcome,
     attempts: number,
@@ -174,6 +182,8 @@ export class AccountLifecycleRepository {
     }
     await this.prisma.lifecycleEvent.create({
       data: {
+        // Stable local id attributes the event to the account without any PII.
+        userId,
         eventType:
           outcome === 'REVOKED' ? 'PROVIDER_REVOCATION_SUCCEEDED' : 'PROVIDER_REVOCATION_FAILED',
         outcome,
