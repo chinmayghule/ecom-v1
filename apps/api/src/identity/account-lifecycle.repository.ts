@@ -45,6 +45,18 @@ export class AccountLifecycleRepository {
     return row?.lifecycleStatus;
   }
 
+  /**
+   * The authoritative local deny marker for a subject digest. Used after a
+   * uniqueness conflict to see whether the winning request already finalized
+   * the provider outcome (WR-02).
+   */
+  async tombstoneFor(subjectDigest: string) {
+    return this.prisma.identityTombstone.findUnique({
+      where: { subjectDigest },
+      select: { providerRevocationOutcome: true },
+    });
+  }
+
   /** Closure accepted: stop new sales, retain records, keep the completion path. */
   async acceptClosure(userId: string): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
@@ -119,8 +131,12 @@ export class AccountLifecycleRepository {
     attempts: number,
     errorCode: string | null,
   ): Promise<void> {
-    await this.prisma.identityTombstone.update({
-      where: { subjectDigest },
+    // Conditional write: only the request that moves PENDING -> terminal may
+    // record the outcome. A losing concurrent deletion must not overwrite the
+    // winner's REVOKED with its own FAILED, nor append a second, contradictory
+    // audit event (WR-02).
+    const updated = await this.prisma.identityTombstone.updateMany({
+      where: { subjectDigest, providerRevocationOutcome: 'PENDING' },
       data: {
         providerRevocationOutcome: outcome,
         providerRevocationAttempts: attempts,
@@ -128,6 +144,11 @@ export class AccountLifecycleRepository {
         ...(outcome === 'REVOKED' ? { providerRevokedAt: new Date() } : {}),
       },
     });
+    if (updated.count === 0) {
+      // A terminal outcome is already recorded; leave it and the audit trail
+      // untouched. Local denial is unaffected either way.
+      return;
+    }
     await this.prisma.lifecycleEvent.create({
       data: {
         eventType:

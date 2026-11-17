@@ -70,7 +70,13 @@ export class AccountLifecycleService {
     }
 
     const subjectDigest = subjectDigestFor(user.clerkUserId, this.tombstoneSecret);
-    await this.finalize(user.id, subjectDigest);
+    const alreadyFinalized = await this.finalize(user.id, subjectDigest);
+    if (alreadyFinalized) {
+      // A concurrent request already committed the tombstone and recorded a
+      // successful provider revocation. Re-revoking would 404 and be wrongly
+      // recorded as FAILED over the winner's REVOKED (WR-02).
+      return { code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' };
+    }
 
     // Local commit is done and authoritative. Provider revocation follows and
     // is fail-closed: its failure cannot roll back or re-enable the account.
@@ -80,9 +86,11 @@ export class AccountLifecycleService {
       : { code: 'PROVIDER_REVOCATION_FAILED', lifecycleStatus: 'ANONYMIZED' };
   }
 
-  private async finalize(userId: string, subjectDigest: string): Promise<void> {
+  /** Returns true when a concurrent request already finalized with REVOKED. */
+  private async finalize(userId: string, subjectDigest: string): Promise<boolean> {
     try {
       await this.repository.finalizeAnonymization({ userId, subjectDigest });
+      return false;
     } catch (error: unknown) {
       if (!isUniqueViolation(error)) throw error;
       // A concurrent request may have written the keyed tombstone. Confirm the
@@ -92,6 +100,10 @@ export class AccountLifecycleService {
       if ((await this.repository.currentStatus(userId)) !== 'ANONYMIZED') {
         throw new ConflictException(LOCAL_ANONYMIZATION_INCOMPLETE);
       }
+      // Skip a second provider call only when the winner's outcome is already
+      // terminal success; otherwise this request still completes the revoke.
+      const tombstone = await this.repository.tombstoneFor(subjectDigest);
+      return tombstone?.providerRevocationOutcome === 'REVOKED';
     }
   }
 }
