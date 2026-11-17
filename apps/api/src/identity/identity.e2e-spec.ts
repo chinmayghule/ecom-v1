@@ -330,11 +330,23 @@ describe('identity API — role and ownership denials (real PostgreSQL)', () => 
       }),
     };
 
+    // The test owns the real client's lifecycle. Give each Nest app a proxy
+    // with no-op hooks so app.close() cannot end the shared pool; the model
+    // delegates still execute against the real migrated database.
+    const prismaForApp = {
+      onModuleInit: async (): Promise<void> => undefined,
+      onModuleDestroy: async (): Promise<void> => undefined,
+      $queryRaw: prisma.$queryRaw.bind(prisma),
+      user: prisma.user,
+      order: prisma.order,
+      store: prisma.store,
+    } as unknown as PrismaService;
+
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [AppModule, PrivateResourceFixtureModule],
     })
       .overrideProvider(PrismaService)
-      .useValue(prisma)
+      .useValue(prismaForApp)
       .overrideProvider(CLERK_TOKEN_VERIFIER)
       .useValue(verifier)
       .overrideProvider(IDENTITY_RESOLVER)
