@@ -2,16 +2,11 @@
 
 Use the relevant project documents below as context; their contents can become stale. If documents disagree, conflict with verified behaviour, or leave a consequential decision unclear, ask the owner rather than assuming one source automatically wins. Record the owner's resolution in the affected documents.
 
-## Explaining problems
-
-When describing a problem, failure or blocker: use plain, direct language without
-dumbing it down; include the details needed to understand and act on it; skip
-niche package names, settings and implementation trivia unless asked or essential.
-
 ## Where things live
 
 | Task | Document |
 |---|---|
+| Explaining problems and reporting style | `GSD_WORKFLOW.md` |
 | Commit, branch, merge, worktree | `GIT_CONVENTIONS.md`, `GIT_WORKFLOW.md` |
 | Writing or fixing tests | `TESTING_CONVENTIONS.md` |
 | GSD planning, execution, reporting, decision authority | `GSD_WORKFLOW.md` |
