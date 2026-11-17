@@ -49,6 +49,14 @@ The owner answered the two blocking questions escalated by Plan 01-03. These sel
 - Final anonymization of personal data is permitted **only when outstanding obligations are resolved** (D-08), subject to legally required retention. This is the sole anonymization trigger for this identity lifecycle and is not a general product-policy rule.
 - Implementation constraint: Plans 01-04 (schema) and 01-08 (deletion/closure implementation) design the exact lifecycle states, who may authorize/reopen closure, and the obligation-resolution mechanism under these locked outcomes. Downstream plans record those details; this resolution does not preselect state names, authority rules or a legal retention period.
 
+#### Tombstone form, retention and Clerk session revocation — `keyed-permanent-tombstone-local-first` (owner selection, 2026-11-17)
+- Owner delegated the choice as standard industry practice; this is the selected standard.
+- **Form:** keyed pseudonymous tombstone — e.g. HMAC of the Clerk external subject (`sub`) with a server-side secret. No raw Clerk subject, email or other raw identifier is retained; the marker is irreversible and cannot be read to learn the person's identity. This preserves the D-07 anonymization intent.
+- **Retention:** permanent/indefinite deny marker — standard industry practice to prevent re-provisioning after permanent account deletion. No legal retention duration was supplied or invented.
+- **Sequence (local-first):** the local tombstone is written in the same local transaction as anonymization, so the deleted subject is denied re-provisioning immediately. Clerk provider revocation is attempted after/alongside the local transaction with retry; the local tombstone is authoritative.
+- **Failure behavior (fail closed):** if the Clerk provider revocation call fails, the person remains locked out locally. The failure must be surfaced and retried and must never restore local access; provider failure must not roll back or reverse the already-committed local anonymization/tombstone.
+- Implementation constraint: the verification guard (Plans 01-06/01-07) consults the tombstone and denies deleted subjects; Plan 01-08 implements the fail-closed local-first transaction and retry/reporting for provider revocation; Plan 01-04 supplies durable storage for the keyed marker plus the server-side secret. Session-revocation assumptions are documented in `01-RESEARCH.md` and constrained here.
+
 </decisions>
 
 <canonical_refs>
