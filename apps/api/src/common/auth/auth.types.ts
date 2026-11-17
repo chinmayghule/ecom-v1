@@ -62,3 +62,27 @@ export function parseWebOrigins(value: string): readonly string[] {
       .filter((origin) => origin.length > 0),
   );
 }
+
+/**
+ * True only for a normalized http(s) origin (scheme + host + optional port),
+ * with no path, query, fragment, credentials or trailing slash. Used to reject
+ * malformed authorized-parties entries rather than silently dropping them,
+ * which would weaken the Clerk `azp` check (CR-01).
+ */
+export function isValidWebOrigin(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      url.hostname.length > 0 &&
+      url.username === '' &&
+      url.password === '' &&
+      url.pathname === '/' &&
+      url.search === '' &&
+      url.hash === '' &&
+      url.origin === value
+    );
+  } catch {
+    return false;
+  }
+}
