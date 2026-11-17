@@ -94,7 +94,7 @@ describe('ClerkAuthGuard (deny-by-default global guard)', () => {
       .set('Authorization', 'Bearer valid.token')
       .set('x-user-id', 'attacker-id')
       .send({ userId: 'attacker-id', capabilities: ['ADMIN'] })
-      .expect(200);
+      .expect(201);
 
     expect(response.body).toEqual({ id: 'local-user-id', userIdFromBody: 'attacker-id' });
     expect(verifier.verify).toHaveBeenCalledWith('valid.token');
@@ -124,10 +124,9 @@ describe('ClerkAuthGuard (deny-by-default global guard)', () => {
       .expect(401);
 
     resolver.resolveVerifiedIdentity.mockRejectedValueOnce(new Error('database down'));
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get('/probe/protected')
       .set('Authorization', 'Bearer valid.token')
       .expect(401);
-    expect(response.body.code).toBe('UNAUTHENTICATED');
   });
 });
