@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-11-17T07:05:40.273Z"
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-11-17T07:21:34.865Z"
 last_activity: 2026-11-17
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 4
-  percent: 44
+  completed_plans: 5
+  percent: 56
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 1 (platform-foundation-identity) — EXECUTING
-Plan: 5 of 9
+Plan: 6 of 9
 Status: Ready to execute
 Last activity: 2026-11-17
 
-Progress: [████░░░░░░] 44%
+Progress: [██████░░░░] 56%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [████░░░░░░] 44%
 | Phase 01 P03 | 3min | 3 tasks | 3 files |
 | Phase 01 P02 | 6min | 3 tasks | 14 files |
 | Phase 01 P04 | 13min | 2 tasks | 10 files |
+| Phase 01 P05 | 10min | 3 tasks | 25 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,11 @@ Recent decisions affecting current work:
 - [Phase 01]: Prisma 7.10.1 selected under D-10/D-11 bounded comparison; MikroORM met criteria but had no project-critical advantage, so no alternative ORM installed — Smaller Nest integration surface and conditional-update primitive; no dependency substitution
 - [Phase 01]: CLI auto-discovers prisma7.config.ts in pinned 7.10.1; DIRECT_URL for migrations, pooled DATABASE_URL for runtime; no Prisma 6 directUrl field
 - [Phase 01]: Lifecycle states designed in 01-04: users ACTIVE->CLOSURE_REQUESTED->CLOSURE_ACCEPTED->ANONYMIZED; stores ACTIVE->CLOSURE_REQUESTED->CLOSED; keyed HMAC tombstone only, no raw Clerk subject or invented retention period
+- [Phase 01]: One global validation pipe and sanitized exception filter own the API request boundary; 5xx detail stays only in the server log — Structural correctness and no SQL/stack/provider leakage (T-05-01/02)
+- [Phase 01]: Pino request logs use a whitelist serializer (requestId, userId when present, outcome, method, path-without-query, route) with redaction as defence in depth — No bearer tokens, cookies, secrets, bodies or profile values may enter logs
+- [Phase 01]: apps/api/src/openapi.ts is the sole code-first OpenAPI assembler; Plan 07 extends it rather than adding a second document source — OpenAPI is the single contract source
+- [Phase 01]: Readiness runs a bounded real Prisma query and fails closed with non-2xx SERVICE_UNAVAILABLE on rejection, timeout or malformed result; liveness stays process-only — Truthful dependency state without leaking connection details
+- [Phase 01]: Pinned prisma CLI 7.10.1 is a runtime dependency so the container applies migrations via the single db:deploy entrypoint after dev deps are pruned — Migration-before-serving with one shared entrypoint and no second command
 
 ### Pending Todos
 
@@ -97,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-17T07:04:59.885Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-11-17T07:21:32.681Z
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None
