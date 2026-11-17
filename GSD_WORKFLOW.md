@@ -75,6 +75,16 @@ discover → plan → execute → verify → land (commit / PR) → record
   and the evidence is recorded.
 - Do not start the next phase to avoid a failing verification in the current one.
 
+### Wave commits
+
+A wave is a meaningful boundary inside a phase. Commit at the end of **every**
+wave, after the wave's build/test gate and tracking update, with a Conventional
+Commits message such as `chore(phase-01): complete wave 2` (see `GIT_CONVENTIONS.md`).
+This makes progress traceable and keeps each wave's changes atomic. The commit
+carries the wave's outstanding project changes; when nothing changed since the
+previous commit, an empty marker commit is used so the boundary stays visible in
+history.
+
 ## Decision authority
 
 **Decide autonomously:** library choice within the approved stack for a
@@ -139,6 +149,15 @@ Rules:
 - Summarise; do not paste whole logs. Quote the line that matters.
 - Never include credentials, API keys or tokens in reports, logs or commit
   messages.
+
+### Explaining problems
+
+- State the problem in plain, direct language without dumbing down the technical
+  meaning.
+- Include every detail needed to understand and act on the problem. Never omit a
+  necessary fact to keep the message short.
+- Avoid niche package names, tool settings and implementation trivia unless they
+  were asked for or are essential to the explanation.
 
 ## Handoff
 
