@@ -1,4 +1,10 @@
-import { Inject, Injectable, Optional, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  Optional,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { AuthenticatedUser } from '../common/auth/auth.types';
 import { validateEnv } from '../common/config/env.validation';
@@ -13,6 +19,8 @@ import {
 
 /** Anonymization temporarily denies a subject that has no resolvable local identity. */
 const AUTHENTICATION_FAILED = 'Authentication is required.';
+/** A conflicting tombstone does not prove the local PII was actually cleared. */
+const LOCAL_ANONYMIZATION_INCOMPLETE = 'Local anonymization could not be confirmed.';
 
 function isUniqueViolation(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
@@ -77,8 +85,13 @@ export class AccountLifecycleService {
       await this.repository.finalizeAnonymization({ userId, subjectDigest });
     } catch (error: unknown) {
       if (!isUniqueViolation(error)) throw error;
-      // A concurrent request already wrote the keyed tombstone. The subject is
-      // permanently denied; retrying the provider action below is safe.
+      // A concurrent request may have written the keyed tombstone. Confirm the
+      // local row is actually anonymized before claiming success or calling the
+      // provider: a tombstone from another path must not yield a 204 while PII
+      // and a live clerk_subject are still present (WR-03).
+      if ((await this.repository.currentStatus(userId)) !== 'ANONYMIZED') {
+        throw new ConflictException(LOCAL_ANONYMIZATION_INCOMPLETE);
+      }
     }
   }
 }

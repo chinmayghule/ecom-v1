@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AuthenticatedUser } from '../common/auth/auth.types';
@@ -111,18 +111,36 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
     expect(repo.finalizeAnonymization.mock.calls[0]?.[0]).not.toMatchObject({ userId: 'user-2' });
   });
 
-  it('treats a keyed-tombstone uniqueness conflict as an already-denied subject', async () => {
+  it('treats a keyed-tombstone uniqueness conflict as an already-denied subject once anonymization is confirmed', async () => {
     repo.finalizeAnonymization.mockRejectedValueOnce(
       new Prisma.PrismaClientKnownRequestError('unique', {
         code: 'P2002',
         clientVersion: '7.10.1',
       }),
     );
+    // First call is the initial status check; the second is the post-conflict
+    // confirmation inside finalize().
+    repo.currentStatus.mockResolvedValueOnce('ACTIVE').mockResolvedValueOnce('ANONYMIZED');
     const service = serviceWith(repo);
 
     const result = await service.deleteAccount(makeUser());
 
     expect(result).toEqual({ code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' });
+    expect(repo.currentStatus).toHaveBeenCalledWith('user-1');
+  });
+
+  it('conflicts on a tombstone conflict when local anonymization cannot be confirmed', async () => {
+    repo.finalizeAnonymization.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('unique', {
+        code: 'P2002',
+        clientVersion: '7.10.1',
+      }),
+    );
+    // currentStatus stays ACTIVE — the PII-containing row was never cleared.
+    repo.hasOutstandingObligations.mockResolvedValueOnce(false);
+    const service = serviceWith(repo);
+
+    await expect(service.deleteAccount(makeUser())).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('reports a recorded provider failure without restoring local access', async () => {
