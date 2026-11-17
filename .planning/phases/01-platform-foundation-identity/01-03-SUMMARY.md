@@ -59,7 +59,7 @@ Each task was committed atomically:
 2. **Task 2: Decide tombstone retention and Clerk session revocation** - `b889768` (docs)
 3. **Task 3: Record the owner resolutions in canonical project records** - `2d2d240` (docs)
 
-**Plan metadata:** `PENDING`
+**Plan metadata:** `6be4310` (docs: complete account-deletion and revocation policy plan)
 
 ## Files Created/Modified
 
