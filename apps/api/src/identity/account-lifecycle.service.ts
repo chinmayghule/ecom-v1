@@ -65,8 +65,12 @@ export class AccountLifecycleService {
 
     if (await this.repository.hasOutstandingObligations(user.id)) {
       // Staged closure: acceptable now, anonymization waits for obligations.
-      await this.repository.acceptClosure(user.id);
-      return { code: 'CLOSURE_ACCEPTED', lifecycleStatus: 'CLOSURE_ACCEPTED' };
+      // The obligation re-check happens inside the same transaction as the
+      // closure writes; if it resolved in the interim, fall through and
+      // finalize instead of reporting a closure that was not applied (WR-04).
+      if (await this.repository.acceptClosure(user.id)) {
+        return { code: 'CLOSURE_ACCEPTED', lifecycleStatus: 'CLOSURE_ACCEPTED' };
+      }
     }
 
     const subjectDigest = subjectDigestFor(user.clerkUserId, this.tombstoneSecret);
