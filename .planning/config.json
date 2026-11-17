@@ -27,7 +27,9 @@
     "discuss_mode": "discuss",
     "skip_discuss": false,
     "code_review": true,
-    "code_review_depth": "standard"
+    "code_review_depth": "standard",
+    "plan_chunked": true,
+    "_auto_chain_active": false
   },
   "ship": {
     "pr_body_sections": [
@@ -75,5 +77,9 @@
   },
   "runtime": "opencode",
   "mode": "interactive",
-  "granularity": "standard"
+  "granularity": "standard",
+  "context_window": 200000,
+  "graphify": {
+    "enabled": true
+  }
 }
