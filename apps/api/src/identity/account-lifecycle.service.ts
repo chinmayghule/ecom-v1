@@ -53,11 +53,11 @@ export class AccountLifecycleService {
   }
 
   async deleteAccount(user: AuthenticatedUser): Promise<AccountDeletionResult> {
-    const status = await this.repository.currentStatus(user.id);
-    if (status === 'ANONYMIZED') {
-      // Idempotent: an already-finalized subject cannot have a new local user.
-      return { code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' };
-    }
+    // A finalized subject never reaches this method over HTTP: the global guard
+    // rejects the keyed tombstone (401) before a controller resolves a local
+    // user, and finalization clears clerk_subject. The only reachable
+    // already-finalized path is the concurrent-deletion conflict handled in
+    // finalize() below, which returns the idempotent 204 result there.
     if (user.clerkUserId.length === 0) {
       // No verified external subject to key a tombstone from: fail closed.
       throw new UnauthorizedException(AUTHENTICATION_FAILED);

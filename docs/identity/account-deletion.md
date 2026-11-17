@@ -39,7 +39,17 @@ in the database. Orders distinguish in-flight obligations
 |---|---|---|---|
 | `ACTIVE` | No | Anonymized in one transaction | 204 |
 | `ACTIVE` / `CLOSURE_REQUESTED` | Yes | Closure accepted, no anonymization yet | 202 |
-| `ANONYMIZED` | n/a | Idempotent completed result | 204 |
+| `ANONYMIZED` / tombstoned | n/a | Replay denied by the global auth guard | 401 |
+
+A completed deletion has **no observable idempotent 204 over HTTP**. Finalization
+writes the keyed tombstone and clears `clerk_subject`, and the global guard
+rejects the tombstoned subject on any subsequent request (including
+`DELETE /users/me` or `GET /users/me` with the same, still-signature-valid
+token). The service therefore has no top-of-method "already ANONYMIZED" branch;
+the only idempotent result is the in-process concurrent-deletion path inside
+`finalize()`, where the request that loses the tombstone uniqueness race
+confirms the winner's `ANONYMIZED` row and terminal `REVOKED` outcome and
+returns the same 204. A client replay after completion receives 401, not 204.
 
 ## Anonymized fields
 
@@ -149,6 +159,11 @@ global validation boundary.
 | 204 | — (no body) | Anonymization completed and provider revocation succeeded | None; access is permanently denied |
 | 202 | `CLOSURE_ACCEPTED` | Closure accepted; anonymization waits for outstanding obligations | Complete/replay when obligations resolve |
 | 409 | `PROVIDER_REVOCATION_FAILED` | Local anonymization committed; provider revocation failed and will be retried | No access restored; provider retry is operational |
+| 401 | — | Subject is tombstoned (replay after a completed deletion) | None; a deleted account cannot be re-authenticated |
+
+The 204/202/409 responses above apply to a subject that is not yet tombstoned.
+Once the tombstone is written, the global guard denies every request before the
+handler runs, so a repeat deletion returns 401 rather than an idempotent 204.
 
 Responses carry only a stable `code` and a non-sensitive `lifecycleStatus`.
 Provider messages, the Clerk subject, the tombstone digest and any profile
