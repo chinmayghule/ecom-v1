@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { IdentityModule } from '../../identity/identity.module';
+import { CapabilityGuard } from '../authorization/capability.guard';
 import { CLERK_TOKEN_VERIFIER } from './auth.types';
 import { ClerkAuthGuard } from './clerk-auth.guard';
 import { ClerkTokenVerifierService } from './clerk-token-verifier';
@@ -34,7 +35,8 @@ export function buildCorsOptions(webOrigins: readonly string[]): ApiCorsOptions 
   providers: [
     { provide: CLERK_TOKEN_VERIFIER, useClass: ClerkTokenVerifierService },
     ClerkAuthGuard,
+    CapabilityGuard,
   ],
-  exports: [CLERK_TOKEN_VERIFIER, ClerkAuthGuard],
+  exports: [CLERK_TOKEN_VERIFIER, ClerkAuthGuard, CapabilityGuard],
 })
 export class AuthModule {}
