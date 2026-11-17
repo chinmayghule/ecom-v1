@@ -64,9 +64,14 @@
   "project_code": null,
   "phase_naming": "sequential",
   "agent_skills": {},
-  "features": {},
+  "features": {
+    "global_learnings": true
+  },
+  "learnings": {
+    "max_inject": 5
+  },
   "resolve_model_ids": "omit",
-  "claude_md_path": "./AGENTS.md",
+  "claude_md_path": "./.planning/GSD-CONTEXT.md",
   "claude_md_assembly": {
     "blocks": {
       "project": "link",
