@@ -1,0 +1,15 @@
+# The Compose build context is the repository root; Docker reads only the
+# context-root .dockerignore, so exclusions are repeated here as well as in
+# apps/api/.dockerignore.
+.git
+.planning
+graphify-out
+**/node_modules
+**/dist
+**/coverage
+**/.vite-hooks
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
+**/*.tsbuildinfo
