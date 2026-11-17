@@ -344,6 +344,29 @@ describe('account deletion lifecycle (real PostgreSQL)', () => {
     ).toBeDefined();
   });
 
+  it('does not append duplicate lifecycle audit events on repeated closure requests', async () => {
+    await request(app.getHttpServer())
+      .delete('/users/me')
+      .set('Authorization', 'Bearer merchant-token')
+      .expect(202);
+
+    const first = await prisma.lifecycleEvent.count({ where: { userId: merchantId } });
+    expect(first).toBeGreaterThan(0);
+
+    await request(app.getHttpServer())
+      .delete('/users/me')
+      .set('Authorization', 'Bearer merchant-token')
+      .expect(202);
+
+    const second = await prisma.lifecycleEvent.count({ where: { userId: merchantId } });
+    expect(second).toBe(first);
+    expect(
+      await prisma.lifecycleEvent.count({
+        where: { userId: merchantId, eventType: 'CLOSURE_REQUESTED' },
+      }),
+    ).toBe(1);
+  });
+
   it('denies a copied, still-valid token after deletion and never re-provisions', async () => {
     const before = await prisma.user.count();
     await request(app.getHttpServer())

@@ -38,7 +38,7 @@ function repositoryStub(obligations = false, status = 'ACTIVE'): RepositoryStub 
   return {
     currentStatus: vi.fn(async () => status),
     hasOutstandingObligations: vi.fn(async () => obligations),
-    acceptClosure: vi.fn(async () => undefined),
+    acceptClosure: vi.fn(async () => true),
     finalizeAnonymization: vi.fn(async () => undefined),
     tombstoneFor: vi.fn(async () => ({ providerRevocationOutcome: 'REVOKED' })),
   };
@@ -93,6 +93,18 @@ describe('AccountLifecycleService — owner-selected local lifecycle', () => {
     expect(repo.acceptClosure).toHaveBeenCalledTimes(1);
     expect(repo.acceptClosure).toHaveBeenCalledWith('user-1');
     expect(repo.finalizeAnonymization).not.toHaveBeenCalled();
+  });
+
+  it('finalizes instead of reporting closure when obligations resolved inside the atomic check', async () => {
+    repo.hasOutstandingObligations.mockResolvedValueOnce(true);
+    repo.acceptClosure.mockResolvedValueOnce(false);
+    const service = serviceWith(repo);
+
+    const result = await service.deleteAccount(makeUser());
+
+    expect(result).toEqual({ code: 'ACCOUNT_ANONYMIZED', lifecycleStatus: 'ANONYMIZED' });
+    expect(repo.acceptClosure).toHaveBeenCalledWith('user-1');
+    expect(repo.finalizeAnonymization).toHaveBeenCalledTimes(1);
   });
 
   it('removes the admin capability only for the requesting user and never touches another user', async () => {

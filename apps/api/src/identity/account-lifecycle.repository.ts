@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { TombstoneRevocationOutcome } from '@prisma/client';
+import type { Prisma, TombstoneRevocationOutcome } from '@prisma/client';
 import { PrismaService } from '../common/database/prisma.service';
 import { IN_FLIGHT_ORDER_STATUSES } from './account-lifecycle.types';
 
@@ -57,10 +57,25 @@ export class AccountLifecycleRepository {
     });
   }
 
-  /** Closure accepted: stop new sales, retain records, keep the completion path. */
-  async acceptClosure(userId: string): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
-      await tx.user.updateMany({
+  /**
+   * Closure accepted: stop new sales, retain records, keep the completion path.
+   *
+   * Idempotent: the obligation check and the mutations share one transaction,
+   * and audit events are appended only for transitions that actually changed
+   * rows, so repeated requests never inflate the append-only log (WR-04).
+   * Returns false when no obligations remain (caller should finalize instead).
+   */
+  async acceptClosure(userId: string): Promise<boolean> {
+    return this.prisma.$transaction(async (tx) => {
+      const obligations = await tx.order.count({
+        where: {
+          status: { in: [...IN_FLIGHT_ORDER_STATUSES] },
+          OR: [{ buyerUserId: userId }, { store: { ownerUserId: userId } }],
+        },
+      });
+      if (obligations === 0) return false;
+
+      const userUpdate = await tx.user.updateMany({
         where: { id: userId, lifecycleStatus: { in: ['ACTIVE', 'CLOSURE_REQUESTED'] } },
         data: { lifecycleStatus: 'CLOSURE_ACCEPTED' },
       });
@@ -72,14 +87,22 @@ export class AccountLifecycleRepository {
       });
       // Admin is an explicit, separately granted capability: closure removes
       // it, scoped to this user only.
-      await tx.userCapability.deleteMany({ where: { userId, capability: 'ADMIN' } });
-      await tx.lifecycleEvent.createMany({
-        data: [
-          { userId, eventType: 'CLOSURE_REQUESTED' },
-          { userId, eventType: 'CLOSURE_ACCEPTED' },
-          { userId, eventType: 'CAPABILITY_REVOKED', detail: 'ADMIN' },
-        ],
+      const revokedCapabilities = await tx.userCapability.deleteMany({
+        where: { userId, capability: 'ADMIN' },
       });
+
+      const events: Prisma.LifecycleEventCreateManyInput[] = [];
+      if (userUpdate.count > 0) {
+        events.push({ userId, eventType: 'CLOSURE_REQUESTED' });
+        events.push({ userId, eventType: 'CLOSURE_ACCEPTED' });
+      }
+      if (revokedCapabilities.count > 0) {
+        events.push({ userId, eventType: 'CAPABILITY_REVOKED', detail: 'ADMIN' });
+      }
+      if (events.length > 0) {
+        await tx.lifecycleEvent.createMany({ data: events });
+      }
+      return true;
     });
   }
 
