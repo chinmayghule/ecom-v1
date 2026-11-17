@@ -6,7 +6,10 @@
     "build": "nest build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vp test run",
-    "test:watch": "vp test watch"
+    "test:watch": "vp test watch",
+    "db:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:test": "bash scripts/test-migrations.sh"
   },
   "dependencies": {
     "@clerk/backend": "3.29.0",
